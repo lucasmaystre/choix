@@ -1,6 +1,7 @@
 """Utilities for ranking-related problems."""
 import math
 import numpy as np
+import random
 
 from scipy.linalg import solve_triangular
 
@@ -11,6 +12,7 @@ SQRT2PI = math.sqrt(2.0 * math.pi)
 
 def normcdf(x):
     """Normal cumulative density function."""
+    # If X ~ N(0,1), returns P(X < x).
     return math.erfc(-x / SQRT2) / 2.0
 
 
@@ -36,11 +38,56 @@ def trunc(arr, a, b):
     return arr.take([[a*m + a, a*m + b], [b*m + a, b*m + b]])
 
 
+def generate_comparisons(model, nb):
+    items = range(len(model))
+    comparisons = list()
+    for x in xrange(nb):
+        # Pick the pair uniformly at random.
+        a, b = random.sample(items, 2)
+        if model.compare(a, b) == a:
+            comparisons.append((a, b))
+        else:
+            comparisons.append((b, a))
+    return comparisons
+
+
+def displacement(ranks, other, avg=False):
+    """Compute the rank displacement.
+
+    `ranks` is *not* the ranking; it gives the rank of each item (akin to a
+    dictionnary mapping items to their rank.)
+
+    If `avg` is true, normalizes the result by the number of items.
+    """
+    assert sorted(ranks) == sorted(other)
+    total = 0
+    for i, j in zip(ranks, other):
+        total += abs(i - j)
+    return total / float(len(ranks)) if avg else total
+
+
 class Parameters(object):
-    pass
+
+    def __init__(self, params):
+        self.params = params
+
+    @property
+    def ranks(self):
+        """Compute the rank of each item."""
+        items = range(len(self))
+        random.shuffle(items)  # Randomizes things in case of ties.
+        ordered = sorted(items, key=lambda x: self.params[x], reverse=True)
+        ranks = np.zeros(len(self), dtype=int)
+        for rank, item in enumerate(ordered, start=1):
+            ranks[item] = rank
+        return ranks
+
+    def __len__(self):
+        return len(self.params)
 
 
 class PiParams(Parameters):
+    """Utilities to compare parameters."""
     pass
 
 
