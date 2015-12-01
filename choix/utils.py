@@ -30,6 +30,12 @@ def inv_pd(mat):
     return np.transpose(res).dot(res)
 
 
+def trunc(arr, a, b):
+    """Return the 2 x 2 submatrix by taking elements related to a & b."""
+    m = arr.shape[0]
+    return arr.take([[a*m + a, a*m + b], [b*m + a, b*m + b]])
+
+
 class Parameters(object):
     pass
 
