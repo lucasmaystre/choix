@@ -19,7 +19,7 @@ MAT_ONE_FLAT = MAT_ONE.ravel()
 class BayesianInference(object):
 
     @classmethod
-    def match_moments(cls):
+    def match_moments(cls, mean_cav, cov_cav):
         raise RuntimeError("not implemented")
     
     @classmethod
@@ -52,14 +52,17 @@ class Logit(BayesianInference):
                              cs * lambdas * lambdas)
                       / np.dot(np.exp(arr1), cs)) - (dlogpart1 * dlogpart1)
         # Tail decays linearly in the log domain (and not quadratically.)
-        lambd = 1.0 / (1.0 + exp(-10.0 * (abs(mean_cav) - (196.0 / 200.0)
-                                 * cov_cav - 4.0)))
-        logpart2 = min(cov_cav / 2.0 - abs(mean_cav), -0.1)
-        dlogpart2 = 1.0
-        if mean_cav > 0:
-            logpart2 = log(1 - exp(logpart2))
-            dlogpart2 = 0.0
-        d2logpart2 = 0.0
+        exponent = -10.0 * (abs(mean_cav) - (196.0 / 200.0) * cov_cav - 4.0) 
+        if exponent < 500:
+            lambd = 1.0 / (1.0 + exp(exponent))
+            logpart2 = min(cov_cav / 2.0 - abs(mean_cav), -0.1)
+            dlogpart2 = 1.0
+            if mean_cav > 0:
+                logpart2 = log(1 - exp(logpart2))
+                dlogpart2 = 0.0
+            d2logpart2 = 0.0
+        else:
+            lambd, logpart2, dlogpart2, d2logpart2 = 0.0, 0.0, 0.0, 0.0
         logpart = (1 - lambd) * logpart1 + lambd * logpart2
         dlogpart = (1 - lambd) * dlogpart1 + lambd * dlogpart2
         d2logpart = (1 - lambd) * d2logpart1 + lambd * d2logpart2
@@ -126,7 +129,7 @@ def _ep(n, comparisons, prior, match_moments, max_iter=MAX_ITERATIONS, state=Non
         # Initialize the natural params in the function space.
         tau = np.zeros(m)
         nu = np.zeros(m)
-        # Initialize thge natural params in the weight space.
+        # Initialize the natural params in the space of thetas.
         prec = np.zeros((n, n))
         xs = np.zeros(n)
     else:
