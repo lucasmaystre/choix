@@ -20,25 +20,37 @@ data, using a variety of algorithms:
 - Luce Spectral Ranking
 - Minorization-Maximization
 - Rank Centrality
-- Rank breaking
+- GMM using rank breaking
 - Approximate bayesian inference with expectation propagation
 
-## Current state
+## Installation
 
-Under active development, use at your own risk.
+Simply type
+
+    pip install choix
+
+The library is under active development, use at your own risk.
 
 ## References
 
-- Lucas Maystre and Matthias Grossglauser, Fast and Accurate Inference of
-  Plackett-Luce Models, NIPS, 2015
-- David R. Hunter. MM algorithms for generalized Bradley-Terry models, The
+- Lucas Maystre and Matthias Grossglauser, [Fast and Accurate Inference of
+  Plackett-Luce Models][1], NIPS, 2015
+- David R. Hunter. [MM algorithms for generalized Bradley-Terry models][2], The
   Annals of Statistics 32(1):384-406, 2004.
-- François Caron and Arnaud Doucet. Efficient Bayesian Inference for
-  Generalized Bradley-Terry models. Journal of Computational and Graphical
+- François Caron and Arnaud Doucet. [Efficient Bayesian Inference for
+  Generalized Bradley-Terry models][3]. Journal of Computational and Graphical
   Statistics, 21(1):174-196, 2012.
-- Sahand Negahban, Sewoong Oh, and Devavrat Shah, Iterative Ranking from
-  Pair-wise Comparison, NIPS 2012
+- Sahand Negahban, Sewoong Oh, and Devavrat Shah, [Iterative Ranking from
+  Pair-wise Comparison][4], NIPS 2012
 - Hossein Azari Soufiani, William Z. Chen, David C. Parkes, and Lirong Xia,
-  Generalized Method-of-Moments for Rank Aggregation, NIPS 2013
-- Wei Chu and Zoubin Ghahramani, Extensions of Gaussian processes for ranking:
-  semi-supervised and active learning, NIPS 2005 Workshop on Learning to Rank.
+  [Generalized Method-of-Moments for Rank Aggregation][5], NIPS 2013
+- Wei Chu and Zoubin Ghahramani, [Extensions of Gaussian processes for ranking:
+  semi-supervised and active learning][6], NIPS 2005 Workshop on Learning to
+  Rank.
+
+[1]: https://infoscience.epfl.ch/record/213486/files/fastinference.pdf
+[2]: http://sites.stat.psu.edu/~dhunter/papers/bt.pdf
+[3]: https://hal.inria.fr/inria-00533638/document
+[4]: https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf
+[5]: https://papers.nips.cc/paper/4997-generalized-method-of-moments-for-rank-aggregation.pdf
+[6]: http://www.gatsby.ucl.ac.uk/~chuwei/paper/gprl.pdf
