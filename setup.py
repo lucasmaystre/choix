@@ -1,30 +1,40 @@
 from setuptools import setup
+from os import path
+
+
+HERE = path.abspath(path.dirname(__file__))
+
 
 def readme():
-    with open('README.md') as f:
+    with open(path.join(HERE, 'README.md')) as f:
         return f.read()
 
-setup(name='choix',
-      version='0.1',
-      description='A library for research on choice models.',
-      long_description=readme(),
-      classifiers=[
+
+setup(
+    name='choix',
+    version='0.1.0.dev2',
+    author='Lucas Maystre',
+    author_email='lucas@maystre.ch',
+    description="Inference algorithms for models based on Luce's choice axiom.",
+    long_description=readme(),
+    url='https://github.com/lucasmaystre/choix',
+    license='MIT',
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Mathematics',
-      ],
-      keywords='statistics ml bradley terry luce thurstone choice ranking',
-      url='http://lucas.maystre.ch/',
-      author='Lucas Maystre',
-      author_email='lucas@maystre.ch',
-      license='MIT',
-      packages=['choix'],
-      install_requires=[
-          'numpy',
-          'scipy',
-      ],
-      test_suite='nose.collector',
-      tests_require=['nose'],
-      include_package_data=True,
-      zip_safe=False)
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    ],
+    keywords='statistics ml bradley terry plackett luce choice comparison ranking',
+    packages=['choix'],
+    install_requires=[
+        'numpy',
+        'scipy',
+    ],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
+    include_package_data=True,
+    zip_safe=False,
+)

@@ -1,1 +1,4 @@
 include README.md
+include LICENSE
+graft notebooks
+prune notebooks/.ipynb_checkpoints
