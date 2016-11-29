@@ -1,0 +1,4 @@
+# 4 objects, one comparison for each pair of neighbors.
+3 > 2
+2 > 1
+1 > 0
