@@ -1,5 +1,7 @@
 # choix
 
+[![Build Status](https://travis-ci.org/lucasmaystre/choix.svg?branch=master)](https://travis-ci.org/lucasmaystre/choix)
+
 `choix` is a Python library that provides inference algorithms for models based
 on Luce's choice axiom. These (probabilistic) models can be used to explain and
 predict outcomes of comparisons between items.
