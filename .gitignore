@@ -9,8 +9,11 @@
 /*.egg-info
 /*.egg
 
-# Other
+# Other.
 /.eggs/
 /_meta/
 .ipynb_checkpoints/
 .cache/
+
+# Sphinx-generated doc.
+docs/_build
