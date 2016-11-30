@@ -35,9 +35,11 @@ def inv_pd(mat):
 
 def log_likelihood_rankings(rankings, strengths):
     """Compute the log-likelihood of Plackett--Luce model parameters.
+
     Args:
         rankings (List[tuple]): The data (partial rankings.)
         strengths (List[float]): The model parameters.
+
     Returns:
         loglik (float): the log-likelihood of the parameters given the data.
     """
@@ -53,9 +55,11 @@ def log_likelihood_rankings(rankings, strengths):
 
 def statdist(generator):
     """Compute the stationary distribution of a Markov chain.
+
     Args:
         generator (numpy.ndarray): The infinitesimal generator matrix of the
             Markov chain.
+
     Returns:
         dist (List[float]): The unnormalized stationary distribution of the
             Markov chain.
@@ -78,11 +82,13 @@ def statdist(generator):
 
 def generate_rankings(strengths, nb_rankings, size_of_ranking=3):
     """Generate random rankings according to a Plackett--Luce model.
+
     Args:
         strengths (List[float]): The model parameters.
         nb_rankings (int): The number of rankings to generate.
         size_of_ranking (Optional[int]): The number of items to include in each
             ranking. Default value: 3.
+
     Returns:
         data (List[tuple]): A list of (partial) rankings generated according to
             a Plackett--Luce model with the specified model parameters.

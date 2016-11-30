@@ -12,21 +12,27 @@ def lsr_rankings(nb_items, rankings, initial_strengths=None):
     decreasing order of preference. For example, the tuple
     
         (2, 0, 4)
+
     corresponds to a ranking where `2` is first, `0` is second, and `4` is
     third.
+
     The estimate is found using the Luce Spectral Ranking algorithm (LSR).
+
     The argument `initial_strengths` can be used to iteratively refine an
     existing parameter estimate (see the implementation of `ilsr` for an idea
     on how this works).
+
     Args:
         nb_items (int): The number of distinct items.
         rankings (List[tuple]): The data (partial rankings).
         initial_strengths (Optional[List]): Strengths used to parametrize the
             transition rates of the LSR Markov chain. If `None`, the strengths
             are assumed to be uniform over the items.
+
     Returns:
         strengths (List[float]): an estimate of the model parameters given
             the data.
+
     Raises:
         ValueError: If the rankings do not lead to a strongly connected
             comparison graph.
@@ -60,19 +66,24 @@ def ilsr_rankings(nb_items, rankings, max_iter=100, eps=1e-8):
     decreasing order of preference. For example, the tuple
     
         (2, 0, 4)
+
     corresponds to a ranking where `2` is first, `0` is second, and `4` is
     third.
+
     The estimate is found using the Iterative Luce Spectral Ranking algorithm
     (I-LSR).
+
     Args:
         nb_items (int): The number of distinct items.
         rankings (List[tuple]): The data (partial rankings.)
         max_iter (Optional[int]): The maximum number of iterations.
         eps (Optional[float]): Minimum difference between successive
             log-likelihoods to declare convergence.
+
     Returns:
         strengths (List[float]): the ML estimate of the model parameters given
             the data.
+
     Raises:
         ValueError: If the rankings do not lead to a strongly connected
             comparison graph.
