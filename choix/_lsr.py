@@ -5,37 +5,45 @@ from ._utils import statdist, log_likelihood_rankings
 
 
 def lsr_rankings(nb_items, rankings, initial_strengths=None):
-    """Computes a fast estimate of Plackett--Luce model parameters.
+    """Compute a fast estimate of Plackett--Luce model parameters.
     
     Items are expected to be represented by consecutive integers from `0` to
-    `n-1`. A (partial) ranking is defined by a tuple containing the items in
-    decreasing order of preference. For example, the tuple
-    
-        (2, 0, 4)
+    `n-1`. A (partial) ranking (see :ref:`data-rankings`) is defined by a tuple
+    containing the items in decreasing order of preference. For example, the
+    tuple ``(2, 0, 4)`` corresponds to a ranking where ``2`` is first, ``0`` is
+    second, and ``4`` is third.
 
-    corresponds to a ranking where `2` is first, `0` is second, and `4` is
-    third.
-
-    The estimate is found using the Luce Spectral Ranking algorithm (LSR).
+    The estimate is found using the Luce Spectral Ranking algorithm [1]_.
 
     The argument `initial_strengths` can be used to iteratively refine an
     existing parameter estimate (see the implementation of `ilsr` for an idea
     on how this works).
 
-    Args:
-        nb_items (int): The number of distinct items.
-        rankings (List[tuple]): The data (partial rankings).
-        initial_strengths (Optional[List]): Strengths used to parametrize the
-            transition rates of the LSR Markov chain. If `None`, the strengths
-            are assumed to be uniform over the items.
+    Parameters
+    ----------
+    nb_items : int
+        The number of distinct items.
+    rankings : list of lists
+        The data (partial rankings).
+    initial_strengths : array_like
+        Strengths used to parametrize the transition rates of the LSR Markov
+        chain. If `None`, the strengths are assumed to be uniform over the
+        items.
 
-    Returns:
-        strengths (List[float]): an estimate of the model parameters given
-            the data.
+    Returns
+    -------
+    strengths : np.array
+        An estimate of the model parameters given the data.
 
-    Raises:
-        ValueError: If the rankings do not lead to a strongly connected
-            comparison graph.
+    Raises
+    ------
+    ValueError
+        If the rankings do not lead to a strongly connected comparison graph.
+
+    References
+    ----------
+    .. [1] L. Maystre, M. Grossglauser, "Fast and Accurate Inference of
+       Plackett-Luce Models", NIPS 2015.
     """
     if initial_strengths is None:
         ws = np.ones(nb_items)
