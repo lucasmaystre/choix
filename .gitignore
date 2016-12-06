@@ -17,3 +17,6 @@
 
 # Sphinx-generated doc.
 docs/_build
+
+# Coverage information.
+.coverage

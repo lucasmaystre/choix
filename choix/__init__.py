@@ -17,6 +17,7 @@ from .utils import (
     log_likelihood_top1,
     generate_pairwise,
     generate_rankings,
+    compare,
 )
 
 from .ep import ep_pairwise

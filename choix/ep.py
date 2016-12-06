@@ -40,7 +40,7 @@ def ep_pairwise(nb_items, data, prior, model="logit",
     else:
         raise ValueError("unknown model '{}'".format(model))
     return _ep_pairwise(nb_items, data, prior, match_moments,
-            max_iter=MAX_ITERATIONS, state=None)
+            max_iter=MAX_ITERATIONS, state=state)
 
 
 def _logphi(z):
