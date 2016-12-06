@@ -17,7 +17,11 @@ blablabla
 Rankings
 --------
 
-blablabla
+Items are expected to be represented by consecutive integers from ``0`` to
+``n-1``. A (partial) ranking (see :ref:`data-rankings`) is defined by a tuple
+containing the items in decreasing order of preference. For example, the tuple
+``(2, 0, 4)`` corresponds to a ranking where ``2`` is first, ``0`` is second,
+and ``4`` is third.
 
 
 .. _data-top1:

@@ -7,7 +7,7 @@ from math import exp, log, pi, sqrt  # Faster than numpy equivalents.
 from numbers import Real
 from scipy.misc import logsumexp
 
-from ._utils import normcdf, inv_pd, SQRT2, SQRT2PI
+from .utils import normcdf, inv_pd, SQRT2, SQRT2PI
 
 
 # EP-related settings.
