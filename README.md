@@ -1,6 +1,7 @@
 # choix
 
 [![Build Status](https://travis-ci.org/lucasmaystre/choix.svg?branch=master)](https://travis-ci.org/lucasmaystre/choix)
+[![codecov](https://codecov.io/gh/lucasmaystre/choix/branch/master/graph/badge.svg)](https://codecov.io/gh/lucasmaystre/choix)
 [![Documentation Status](https://readthedocs.org/projects/choix/badge/?version=latest)](http://choix.lum.li/en/latest/?badge=latest)
 
 `choix` is a Python library that provides inference algorithms for models based
