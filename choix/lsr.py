@@ -42,8 +42,8 @@ def _ilsr(num_items, data, alpha, max_iter, eps, lsr_fun, ll_fun):
 def lsr_pairwise(num_items, data, alpha=0.0, initial_params=None):
     """Compute the LSR estimate of model parameters.
 
-    This function implements the Luce Spectral Ranking inference algorithm [1]_
-    for pairwise comparison data (see :ref:`data-pairwise`).
+    This function implements the Luce Spectral Ranking inference algorithm
+    [MG15]_ for pairwise comparison data (see :ref:`data-pairwise`).
 
     The argument ``initial_params`` can be used to iteratively refine an
     existing parameter estimate (see the implementation of
@@ -65,11 +65,6 @@ def lsr_pairwise(num_items, data, alpha=0.0, initial_params=None):
     -------
     params : np.array
         An estimate of model parameters.
-
-    References
-    ----------
-    .. [1] L. Maystre, M. Grossglauser, "Fast and Accurate Inference of
-       Plackett-Luce Models", NIPS 2015.
     """
     ws, chain = _init_lsr(num_items, alpha, initial_params)
     for winner, loser in data:
@@ -83,7 +78,7 @@ def ilsr_pairwise(num_items, data, alpha=0.0, max_iter=100, eps=1e-8):
 
     This function computes the maximum-likelihood (ML) estimate of model
     parameters given pairwise comparison data (see :ref:`data-pairwise`), using
-    the iterative Luce Spectral Ranking algorithm [1]_.
+    the iterative Luce Spectral Ranking algorithm [MG15]_.
 
     If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
     estimate under a (peaked) Dirichlet prior. See :ref:`regularization` for
@@ -107,11 +102,6 @@ def ilsr_pairwise(num_items, data, alpha=0.0, max_iter=100, eps=1e-8):
     -------
     params : np.array
         The ML estimate of model parameters.
-
-    References
-    ----------
-    .. [1] L. Maystre, M. Grossglauser, "Fast and Accurate Inference of
-       Plackett-Luce Models", NIPS 2015.
     """
     return _ilsr(num_items, data, alpha, max_iter, eps,
             lsr_pairwise, log_likelihood_pairwise)
@@ -120,8 +110,8 @@ def ilsr_pairwise(num_items, data, alpha=0.0, max_iter=100, eps=1e-8):
 def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
     """Compute the LSR estimate of model parameters.
 
-    This function implements the Luce Spectral Ranking inference algorithm [1]_
-    for ranking data (see :ref:`data-rankings`).
+    This function implements the Luce Spectral Ranking inference algorithm
+    [MG15]_ for ranking data (see :ref:`data-rankings`).
 
     The argument ``initial_params`` can be used to iteratively refine an
     existing parameter estimate (see the implementation of
@@ -143,11 +133,6 @@ def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
     -------
     params : np.array
         An estimate of model parameters.
-
-    References
-    ----------
-    .. [1] L. Maystre, M. Grossglauser, "Fast and Accurate Inference of
-       Plackett-Luce Models", NIPS 2015.
     """
     ws, chain = _init_lsr(num_items, alpha, initial_params)
     for ranking in data:
@@ -166,7 +151,7 @@ def ilsr_rankings(num_items, data, max_iter=100, eps=1e-8):
 
     This function computes the maximum-likelihood (ML) estimate of model
     parameters given ranking data (see :ref:`data-rankings`), using the
-    iterative Luce Spectral Ranking algorithm [1]_.
+    iterative Luce Spectral Ranking algorithm [MG15]_.
 
     If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
     estimate under a (peaked) Dirichlet prior. See :ref:`regularization` for
@@ -190,11 +175,6 @@ def ilsr_rankings(num_items, data, max_iter=100, eps=1e-8):
     -------
     params : np.array
         The ML estimate of model parameters.
-
-    References
-    ----------
-    .. [1] L. Maystre, M. Grossglauser, "Fast and Accurate Inference of
-       Plackett-Luce Models", NIPS 2015.
     """
     return _ilsr(num_items, data, max_iter, eps,
             lsr_rankings, log_likelihood_rankings)
@@ -203,8 +183,8 @@ def ilsr_rankings(num_items, data, max_iter=100, eps=1e-8):
 def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
     """Compute the LSR estimate of model parameters.
 
-    This function implements the Luce Spectral Ranking inference algorithm [1]_
-    for top-1 data (see :ref:`data-top1`).
+    This function implements the Luce Spectral Ranking inference algorithm
+    [MG15]_ for top-1 data (see :ref:`data-top1`).
 
     The argument ``initial_params`` can be used to iteratively refine an
     existing parameter estimate (see the implementation of
@@ -226,11 +206,6 @@ def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
     -------
     params : np.array
         An estimate of model parameters.
-
-    References
-    ----------
-    .. [1] L. Maystre, M. Grossglauser, "Fast and Accurate Inference of
-       Plackett-Luce Models", NIPS 2015.
     """
     ws, chain = _init_lsr(num_items, alpha, initial_params)
     for winner, losers in data:

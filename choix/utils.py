@@ -42,7 +42,7 @@ def footrule_dist(params1, params2=None):
     item ``i`` in the first model, and :math:`\tau_i` be its rank in the second
     model. Spearman's footrule distance is defined by
 
-    ..math::
+    .. math::
 
       \sum_{i=1}^N | \sigma_i - \tau_i |
 

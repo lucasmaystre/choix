@@ -1,3 +1,5 @@
+.. _regularization:
+
 Notes on Regularization
 =======================
 

@@ -35,6 +35,7 @@ Contents
    data
    regularization
    api
+   references
 
 
 
