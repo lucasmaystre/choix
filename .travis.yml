@@ -3,4 +3,10 @@ python: "3.5"
 install:
   - "pip install numpy"
   - "pip install scipy"
-script: "python setup.py test"
+  - "pip install pytest"
+  - "pip install pytest-cov"
+  - "pip install codecov"
+  - "pip install -e ."
+script: "py.test --cov=choix"
+after_success:
+  - "codecov"
