@@ -13,8 +13,8 @@ PAIRWISE_DATA = [
     (4, 0), (0, 4), (6, 5), (3, 2), (3, 4),
     (3, 4), (5, 2), (7, 3), (7, 6), (6, 5),]
 # With regularization set to 0.5.
-ESTIMATE = [1.64485831e+00, 2.18555147e-01, 7.25957163e-03, 4.49149543e+00,
-        6.85170149e-03, 1.61943128e+00, 9.77157595e-03, 1.77698560e-03]
+ESTIMATE = [0.50789183, 0.5376469, 0.62405681, 0.797485, 0.62110142,
+        0.85111539, 1.60412956, 2.45657308]
 
 RND = np.random.RandomState(42)
 EPS = math.sqrt(np.finfo(float).eps)
@@ -45,6 +45,13 @@ def test_opt_pairwise():
     for method in ("BFGS", "Newton-CG"):
         est = opt_pairwise(8, PAIRWISE_DATA, method=method, penalty=0.5)
         assert np.allclose(est, ESTIMATE)
+
+
+def test_opt_pairwise_extreme():
+    data = ((0,1), (1, 2))
+    for method in ("BFGS", "Newton-CG"):
+        est = opt_pairwise(3, data, method=method, penalty=0.00001)
+        assert est[0] > est[1] > est[2]
 
 
 def test_opt_pairwise_valuerror():

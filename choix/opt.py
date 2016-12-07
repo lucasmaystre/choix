@@ -1,15 +1,21 @@
+import math
 import numpy as np
 
-from math import exp
 from scipy.optimize import minimize
+
+
+def _safe_exp(x):
+    x = min(max(x, -500), 500)
+    return math.exp(x)
 
 
 class PairwiseFcts:
 
     """Optimization-related methods for pairwise comparison data.
     
-    This class provides methods to compute the log-likelihood ("objective"),
-    the gradient and the Hessian of model parameters given pairwise data.
+    This class provides methods to compute the negative log-likelihood (the
+    "objective"), its gradient and its Hessian, given model parameters and
+    pairwise comparison data.
 
     The parameters are assumed to be in the log domain.
     """
@@ -19,26 +25,27 @@ class PairwiseFcts:
         self._penalty = penalty
 
     def objective(self, params):
+        """Compute the negative penalized log-likelihood."""
         val = self._penalty * np.sum(params**2)
         for win, los in self._data:
-            val += -np.logaddexp(0, -(params[win] - params[los]))
+            val += np.logaddexp(0, -(params[win] - params[los]))
         return val
 
     def gradient(self, params):
         grad = 2 * self._penalty * params
         for win, los in self._data:
-            z = 1 / (1 + exp(params[win] - params[los]))
-            grad[win] += +z
-            grad[los] += -z
+            z = 1 / (1 + _safe_exp(params[win] - params[los]))
+            grad[win] += -z
+            grad[los] += +z
         return grad
 
     def hessian(self, params):
         hess = 2 * self._penalty * np.identity(len(params))
         for win, los in self._data:
-            z = exp(params[win] - params[los])
-            val =  z / (1 + z)**2
-            hess[(win,los),(los,win)] += +val
-            hess[(win,los),(win,los)] += -val
+            z = _safe_exp(params[win] - params[los])
+            val =  1 / (1/z + 2 + z)
+            hess[(win,los),(los,win)] += -val
+            hess[(win,los),(win,los)] += +val
         return hess
 
 
