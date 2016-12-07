@@ -21,3 +21,5 @@ from .utils import (
 )
 
 from .ep import ep_pairwise
+
+from .opt import opt_pairwise

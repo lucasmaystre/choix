@@ -17,6 +17,7 @@ Functions that :ref:`process pairwise comparisons <process-pairwise>`.
 
    choix.lsr_pairwise
    choix.ilsr_pairwise
+   choix.opt_pairwise
    choix.ep_pairwise
    choix.log_likelihood_pairwise
 
@@ -56,6 +57,7 @@ Processing pairwise comparisons
 
 .. autofunction:: choix.lsr_pairwise
 .. autofunction:: choix.ilsr_pairwise
+.. autofunction:: choix.opt_pairwise
 .. autofunction:: choix.ep_pairwise
 .. autofunction:: choix.log_likelihood_pairwise
 

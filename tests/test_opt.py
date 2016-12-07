@@ -1,0 +1,52 @@
+import math
+import numpy as np
+import pytest
+
+from choix.opt import PairwiseFcts, opt_pairwise
+from scipy.optimize import check_grad, approx_fprime
+
+
+# `8-random` case.
+PAIRWISE_DATA = [
+    (7, 3), (2, 0), (5, 2), (4, 2), (2, 1),
+    (4, 5), (6, 3), (5, 4), (7, 0), (2, 3),
+    (4, 0), (0, 4), (6, 5), (3, 2), (3, 4),
+    (3, 4), (5, 2), (7, 3), (7, 6), (6, 5),]
+# With regularization set to 0.5.
+ESTIMATE = [1.64485831e+00, 2.18555147e-01, 7.25957163e-03, 4.49149543e+00,
+        6.85170149e-03, 1.61943128e+00, 9.77157595e-03, 1.77698560e-03]
+
+RND = np.random.RandomState(42)
+EPS = math.sqrt(np.finfo(float).eps)
+
+
+def test_pairwise_gradient():
+    fcts = PairwiseFcts(PAIRWISE_DATA, 0.2)
+    for sigma in np.linspace(1, 20, num=10):
+        xs = sigma * RND.randn(8)
+        val = approx_fprime(xs, fcts.objective, EPS)
+        err = check_grad(fcts.objective, fcts.gradient, xs, epsilon=EPS)
+        assert abs(err / np.linalg.norm(val)) < 1e-5
+
+
+def test_pairwise_hessian():
+    fcts = PairwiseFcts(PAIRWISE_DATA, 0.2)
+    for sigma in np.linspace(1, 20, num=10):
+        xs = sigma * RND.randn(8)
+        for i in range(8):
+            obj = lambda xs: fcts.gradient(xs)[i]
+            grad = lambda xs: fcts.hessian(xs)[i]
+            val = approx_fprime(xs, obj, EPS)
+            err = check_grad(obj, grad, xs, epsilon=EPS)
+            assert abs(err / np.linalg.norm(val)) < 1e-5
+
+
+def test_opt_pairwise():
+    for method in ("BFGS", "Newton-CG"):
+        est = opt_pairwise(8, PAIRWISE_DATA, method=method, penalty=0.5)
+        assert np.allclose(est, ESTIMATE)
+
+
+def test_opt_pairwise_valuerror():
+    with pytest.raises(ValueError):
+        est = opt_pairwise(8, PAIRWISE_DATA, method="qwerty", penalty=0.5)
