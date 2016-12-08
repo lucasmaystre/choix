@@ -53,7 +53,7 @@ def opt_pairwise(num_items, data, method="BFGS", penalty=1e-6):
     """Compute the ML estimate of model parameters using ``scipy.optimize``.
 
     This function computes the (penalized) maximum-likelihood estimate of model
-    parameters given pairwise comparison data (see :ref:`data-pairwise), using
+    parameters given pairwise comparison data (see :ref:`data-pairwise`), using
     optimizers provided by the ``scipy.optimize`` module.
 
     Parameters
