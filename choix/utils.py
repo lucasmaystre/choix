@@ -106,19 +106,22 @@ def log_likelihood_top1(data, params):
 def statdist(generator):
     """Compute the stationary distribution of a Markov chain.
 
-    Args:
-        generator (numpy.ndarray): The infinitesimal generator matrix of the
-            Markov chain.
+    Parameters
+    ----------
+    generator : array_like
+        Infinitesimal generator matrix of the Markov chain.
 
-    Returns:
-        dist (List[float]): The unnormalized stationary distribution of the
-            Markov chain.
+    Returns
+    -------
+    dist : np.array
+        The unnormalized stationary distribution of the Markov chain.
 
     Raises
     ------
     ValueError
-        If the rankings do not lead to a strongly connected comparison graph.
+        If the Markov chain does not have a unique stationary distribution.
     """
+    generator = np.asarray(generator)
     n = generator.shape[0]
     with warnings.catch_warnings():
         # The LU decomposition raises a warning when the generator matrix is
@@ -136,7 +139,7 @@ def statdist(generator):
         # Ideally we would like to catch `spl.LinAlgError` only, but there seems
         # to be a bug in scipy, in the code that raises the LinAlgError (!!).
         raise ValueError("stationary distribution could not be computed."
-                "Perhaps the comparison graph is not strongly connected?")
+                "Perhaps the Markov chain has more than one absorbing class?")
     res = np.append(res, 1.0)
     return (n / res.sum()) * res
 
@@ -175,26 +178,35 @@ def generate_pairwise(params, num_comparisons=10):
     return tuple(data)
 
 
-def generate_rankings(params, nb_rankings, size_of_ranking=3):
-    """Generate random rankings according to a Plackett--Luce model.
+def generate_rankings(params, num_rankings, size=3):
+    """Generate rankings according to a Plackett--Luce model.
 
-    Args:
-        params (List[float]): The model parameters.
-        nb_rankings (int): The number of rankings to generate.
-        size_of_ranking (Optional[int]): The number of items to include in each
-            ranking. Default value: 3.
+    This function samples subsets of items (of size ``size``) independently and
+    uniformly at random, and samples the correspoding partial ranking from a
+    Plackett--Luce model parametrized by ``params``.
 
-    Returns:
-        data (List[tuple]): A list of (partial) rankings generated according to
-            a Plackett--Luce model with the specified model parameters.
+    Parameters
+    ----------
+    params : array_like
+        Model parameters.
+    num_rankings : int
+        Number of rankings to generate.
+    size : int, optional
+        Number of items to include in each ranking.
+
+    Returns
+    -------
+    data : list of np.array
+        A list of (partial) rankings generated according to a Plackett--Luce
+        model with the specified model parameters.
     """
     n = len(params)
     items = tuple(range(n))
     params = np.asarray(params)
     data = list()
-    for _ in range(nb_rankings):
+    for _ in range(num_rankings):
         # Pick the alternatives uniformly at random.
-        alts = random.sample(items, size_of_ranking)
+        alts = random.sample(items, size)
         ranking = compare(alts, params, rank=True)
         data.append(ranking)
     return tuple(data)
