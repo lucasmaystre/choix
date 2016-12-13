@@ -49,7 +49,8 @@ class PairwiseFcts:
         return hess
 
 
-def opt_pairwise(num_items, data, method="BFGS", penalty=1e-6):
+def opt_pairwise(num_items, data, penalty=1e-6, method="BFGS",
+        initial_params=None, max_iter=None, tol=1e-5):
     """Compute the ML estimate of model parameters using ``scipy.optimize``.
 
     This function computes the (penalized) maximum-likelihood estimate of model
@@ -62,10 +63,16 @@ def opt_pairwise(num_items, data, method="BFGS", penalty=1e-6):
         Number of distinct items.
     data : list of lists
         Pairwise comparison data.
-    method : str, optional
-        Optimization method. Either "BFGS" or "Newton-CG".
     penalty : float, optional
         Regularization strength.
+    method : str, optional
+        Optimization method. Either "BFGS" or "Newton-CG".
+    initial_params : array_like, optional
+        Parameters used to initialize the iterative procedure.
+    max_iter : int, optional
+        Maximum number of iterations allowed.
+    tol : float, optional
+        Tolerance for termination (method-specific).
 
     Returns
     -------
@@ -78,12 +85,21 @@ def opt_pairwise(num_items, data, method="BFGS", penalty=1e-6):
         If the method is not "BFGS" or "Newton-CG".
     """
     fcts = PairwiseFcts(data, penalty)
-    x0 = np.zeros(num_items)
+    if initial_params is not None:
+        x0 = np.log(initial_params)
+        x0 = x0 - np.mean(x0)
+    else:
+        x0 = np.zeros(num_items)
     if method == "BFGS":
-        res = minimize(fcts.objective, x0, method=method, jac=fcts.gradient)
+        # `gtol`: Gradient norm must be less than gtol before successful
+        # termination [scipy doc].
+        res = minimize(fcts.objective, x0, method=method, jac=fcts.gradient,
+                options={"gtol": tol, "maxiter": max_iter})
     elif method == "Newton-CG":
-        res = minimize(fcts.objective, x0, method=method,
-                jac=fcts.gradient, hess=fcts.hessian)
+        # `xtol`: Average relative error in solution xopt acceptable for
+        # convergence [scipy doc].
+        res = minimize(fcts.objective, x0, method=method, jac=fcts.gradient,
+                hess=fcts.hessian, options={"xtol": tol, "maxiter": max_iter})
     else:
         raise ValueError("method not known")
     # Parameters are in the log domain - reparametrize the model.

@@ -43,17 +43,19 @@ def test_pairwise_hessian():
 
 def test_opt_pairwise():
     for method in ("BFGS", "Newton-CG"):
-        est = opt_pairwise(8, PAIRWISE_DATA, method=method, penalty=0.5)
-        assert np.allclose(est, ESTIMATE)
+        for params in (None, np.exp(RND.randn(8))):
+            est = opt_pairwise(8, PAIRWISE_DATA, penalty=0.5, method=method,
+                    initial_params=params)
+            assert np.allclose(est, ESTIMATE)
 
 
 def test_opt_pairwise_extreme():
     data = ((0,1), (1, 2))
     for method in ("BFGS", "Newton-CG"):
-        est = opt_pairwise(3, data, method=method, penalty=0.00001)
+        est = opt_pairwise(3, data, penalty=0.00001, method=method)
         assert est[0] > est[1] > est[2]
 
 
 def test_opt_pairwise_valuerror():
     with pytest.raises(ValueError):
-        est = opt_pairwise(8, PAIRWISE_DATA, method="qwerty", penalty=0.5)
+        est = opt_pairwise(8, PAIRWISE_DATA, penalty=0.5, method="qwerty")
