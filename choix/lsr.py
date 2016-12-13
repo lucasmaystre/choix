@@ -5,17 +5,17 @@ from .convergence import NormOfDifferenceTest
 from .utils import statdist
 
 
-def _init_lsr(num_items, alpha, initial_params):
+def _init_lsr(n_items, alpha, initial_params):
     """Initialize the LSR Markov chain and the weights."""
     if initial_params is None:
-        ws = np.ones(num_items)
+        ws = np.ones(n_items)
     else:
         ws = np.asarray(initial_params)
-    chain = alpha * np.ones((num_items, num_items), dtype=float)
+    chain = alpha * np.ones((n_items, n_items), dtype=float)
     return ws, chain
 
 
-def _ilsr(num_items, data, alpha, params, max_iter, tol, lsr_fun):
+def _ilsr(n_items, data, alpha, params, max_iter, tol, lsr_fun):
     """Iteratively refine LSR estimates until convergence.
 
     Raises
@@ -25,13 +25,13 @@ def _ilsr(num_items, data, alpha, params, max_iter, tol, lsr_fun):
     """
     converged = NormOfDifferenceTest(tol, order=1)
     for _ in range(max_iter):
-        params = lsr_fun(num_items, data, alpha=alpha, initial_params=params)
+        params = lsr_fun(n_items, data, alpha=alpha, initial_params=params)
         if converged(params):
             return params
     raise RuntimeError("Did not converge after {} iterations".format(max_iter))
 
 
-def lsr_pairwise(num_items, data, alpha=0.0, initial_params=None):
+def lsr_pairwise(n_items, data, alpha=0.0, initial_params=None):
     """Compute the LSR estimate of model parameters.
 
     This function implements the Luce Spectral Ranking inference algorithm
@@ -48,7 +48,7 @@ def lsr_pairwise(num_items, data, alpha=0.0, initial_params=None):
 
     Parameters
     ----------
-    num_items : int
+    n_items : int
         Number of distinct items.
     data : list of lists
         Pairwise comparison data.
@@ -62,14 +62,14 @@ def lsr_pairwise(num_items, data, alpha=0.0, initial_params=None):
     params : np.array
         An estimate of model parameters.
     """
-    ws, chain = _init_lsr(num_items, alpha, initial_params)
+    ws, chain = _init_lsr(n_items, alpha, initial_params)
     for winner, loser in data:
         chain[loser, winner] += 1 / (ws[winner] + ws[loser])
     chain -= np.diag(chain.sum(axis=1))
     return statdist(chain)
 
 
-def ilsr_pairwise(num_items, data, alpha=0.0, initial_params=None,
+def ilsr_pairwise(n_items, data, alpha=0.0, initial_params=None,
         max_iter=100, tol=1e-8):
     """Compute the ML estimate of model parameters using I-LSR.
 
@@ -83,7 +83,7 @@ def ilsr_pairwise(num_items, data, alpha=0.0, initial_params=None,
 
     Parameters
     ----------
-    num_items : int
+    n_items : int
         Number of distinct items.
     data : list of lists
         Pairwise comparison data.
@@ -102,11 +102,11 @@ def ilsr_pairwise(num_items, data, alpha=0.0, initial_params=None,
     params : np.array
         The ML estimate of model parameters.
     """
-    return _ilsr(num_items, data, alpha, initial_params, max_iter, tol,
+    return _ilsr(n_items, data, alpha, initial_params, max_iter, tol,
             lsr_pairwise)
 
 
-def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
+def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
     """Compute the LSR estimate of model parameters.
 
     This function implements the Luce Spectral Ranking inference algorithm
@@ -123,7 +123,7 @@ def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
 
     Parameters
     ----------
-    num_items : int
+    n_items : int
         Number of distinct items.
     data : list of lists
         Ranking data.
@@ -137,7 +137,7 @@ def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
     params : np.array
         An estimate of model parameters.
     """
-    ws, chain = _init_lsr(num_items, alpha, initial_params)
+    ws, chain = _init_lsr(n_items, alpha, initial_params)
     for ranking in data:
         sum_ = ws.take(ranking).sum()
         for i, winner in enumerate(ranking[:-1]):
@@ -149,7 +149,7 @@ def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
     return statdist(chain)
 
 
-def ilsr_rankings(num_items, data, alpha=0.0, initial_params=None,
+def ilsr_rankings(n_items, data, alpha=0.0, initial_params=None,
         max_iter=100, tol=1e-8):
     """Compute the ML estimate of model parameters using I-LSR.
 
@@ -163,7 +163,7 @@ def ilsr_rankings(num_items, data, alpha=0.0, initial_params=None,
 
     Parameters
     ----------
-    num_items : int
+    n_items : int
         Number of distinct items.
     data : list of lists
         Ranking data.
@@ -182,11 +182,11 @@ def ilsr_rankings(num_items, data, alpha=0.0, initial_params=None,
     params : np.array
         The ML estimate of model parameters.
     """
-    return _ilsr(num_items, data, alpha, initial_params, max_iter, tol,
+    return _ilsr(n_items, data, alpha, initial_params, max_iter, tol,
             lsr_rankings)
 
 
-def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
+def lsr_top1(n_items, data, alpha=0.0, initial_params=None):
     """Compute the LSR estimate of model parameters.
 
     This function implements the Luce Spectral Ranking inference algorithm
@@ -203,7 +203,7 @@ def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
 
     Parameters
     ----------
-    num_items : int
+    n_items : int
         Number of distinct items.
     data : list of lists
         Top-1 data.
@@ -217,7 +217,7 @@ def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
     params : np.array
         An estimate of model parameters.
     """
-    ws, chain = _init_lsr(num_items, alpha, initial_params)
+    ws, chain = _init_lsr(n_items, alpha, initial_params)
     for winner, losers in data:
         val = 1 / (ws.take(losers).sum() + ws[winner])
         for loser in losers:
@@ -226,8 +226,8 @@ def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
     return statdist(chain)
 
 
-def ilsr_top1(num_items, data, alpha=0.0, initial_params=None,
+def ilsr_top1(n_items, data, alpha=0.0, initial_params=None,
         max_iter=100, tol=1e-8):
     raise RuntimeError("not yet implemented.")
-    #return _ilsr(num_items, data, max_iter, tol,
+    #return _ilsr(n_items, data, max_iter, tol,
     #        lsr_pairwise, log_likelihood_pairwise)

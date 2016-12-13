@@ -49,7 +49,7 @@ class PairwiseFcts:
         return hess
 
 
-def opt_pairwise(num_items, data, penalty=1e-6, method="BFGS",
+def opt_pairwise(n_items, data, penalty=1e-6, method="BFGS",
         initial_params=None, max_iter=None, tol=1e-5):
     """Compute the ML estimate of model parameters using ``scipy.optimize``.
 
@@ -59,7 +59,7 @@ def opt_pairwise(num_items, data, penalty=1e-6, method="BFGS",
 
     Parameters
     ----------
-    num_items : int
+    n_items : int
         Number of distinct items.
     data : list of lists
         Pairwise comparison data.
@@ -89,7 +89,7 @@ def opt_pairwise(num_items, data, penalty=1e-6, method="BFGS",
         x0 = np.log(initial_params)
         x0 = x0 - np.mean(x0)
     else:
-        x0 = np.zeros(num_items)
+        x0 = np.zeros(n_items)
     if method == "BFGS":
         # `gtol`: Gradient norm must be less than gtol before successful
         # termination [scipy doc].
@@ -104,4 +104,4 @@ def opt_pairwise(num_items, data, penalty=1e-6, method="BFGS",
         raise ValueError("method not known")
     # Parameters are in the log domain - reparametrize the model.
     params = np.exp(res.x)
-    return params / (params.sum() / num_items)
+    return params / (params.sum() / n_items)

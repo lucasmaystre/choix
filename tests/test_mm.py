@@ -10,11 +10,11 @@ RND = np.random.RandomState(42)
 
 def test_mm_pairwise():
     for case in iter_testcases('pairwise'):
-        num_items = case["num_items"]
+        n_items = case["n_items"]
         data = case["data"]
-        for params in (None, np.exp(RND.randn(num_items))):
+        for params in (None, np.exp(RND.randn(n_items))):
             assert np.allclose(case["ml_est"],
-                    mm_pairwise(num_items, data, initial_params=params))
+                    mm_pairwise(n_items, data, initial_params=params))
 
 
 def test_mm_pairwise_diverges():

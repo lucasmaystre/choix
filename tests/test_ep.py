@@ -15,7 +15,7 @@ LOGIT_TRUE_COV = np.array(
 
 def test_ep_logit():
     with open(data_path("simpletrans-4.dat")) as f:
-        num_items, data = parse_pairwise(f.read())
-    mean, cov = choix.ep_pairwise(num_items, data, 8.0, model='logit')
+        n_items, data = parse_pairwise(f.read())
+    mean, cov = choix.ep_pairwise(n_items, data, 8.0, model='logit')
     assert np.allclose(mean, LOGIT_TRUE_MEAN, atol=1e-3)
     assert np.allclose(cov, LOGIT_TRUE_COV, atol=1e-3)

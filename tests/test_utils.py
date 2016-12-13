@@ -138,10 +138,10 @@ def test_generate_pairwise():
 
 def test_generate_rankings():
     """``generate_rankings`` should work as expected."""
-    num_items = 10
-    params = np.exp(RND.rand(num_items))
+    n_items = 10
+    params = np.exp(RND.rand(n_items))
     for num in RND.choice(20, size=3, replace=False):
-        size = 1 + RND.choice(num_items - 1)
+        size = 1 + RND.choice(n_items - 1)
         print(params, num, size)
         data = generate_rankings(params, num, size=size)
         assert np.array(data).shape == (num, size)

@@ -38,6 +38,6 @@ def test_lsr_pairwise():
 
 def test_ilsr_pairwise():
     for case in iter_testcases('pairwise'):
-        num_items = case["num_items"]
+        n_items = case["n_items"]
         data = case["data"]
-        assert np.allclose(case["ml_est"], ilsr_pairwise(num_items, data))
+        assert np.allclose(case["ml_est"], ilsr_pairwise(n_items, data))

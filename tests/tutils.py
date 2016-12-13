@@ -24,8 +24,8 @@ def parse_pairwise(raw):
         comparisons.append(pair)
         if max(pair) > max_item:
             max_item = max(pair)
-    num_items = max_item + 1
-    return num_items, tuple(comparisons)
+    n_items = max_item + 1
+    return n_items, tuple(comparisons)
 
 
 def iter_testcases(dtype):
