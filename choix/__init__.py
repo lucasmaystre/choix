@@ -10,6 +10,10 @@ from .lsr import (
     ilsr_top1,
 )
 
+from .mm import (
+    mm_pairwise,
+)
+
 from .utils import (
     footrule_dist,
     log_likelihood_pairwise,
