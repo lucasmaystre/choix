@@ -1,7 +1,7 @@
 import choix
 import numpy as np
 
-from testutils import data_path, parse_pairwise
+from tutils import data_path, parse_pairwise
 
 
 LOGIT_TRUE_MEAN = np.array(

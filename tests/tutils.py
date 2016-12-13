@@ -1,3 +1,5 @@
+import glob
+import json
 import os.path
 
 
@@ -24,3 +26,10 @@ def parse_pairwise(raw):
             max_item = max(pair)
     num_items = max_item + 1
     return num_items, tuple(comparisons)
+
+
+def iter_testcases(dtype):
+    pattern = os.path.join(DATA_ROOT, "testcase-{}-*.json".format(dtype))
+    for path in glob.glob(pattern):
+        with open(path) as f:
+            yield json.load(f)

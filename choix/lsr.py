@@ -1,8 +1,8 @@
 """(Iterative) Luce Spectral Ranking inference algorithms."""
 import numpy as np
 
-from .utils import (statdist, log_likelihood_pairwise, log_likelihood_rankings,
-        log_likelihood_top1)
+from .convergence import NormOfDifferenceTest
+from .utils import statdist
 
 
 def _init_lsr(num_items, alpha, initial_params):
@@ -11,16 +11,11 @@ def _init_lsr(num_items, alpha, initial_params):
         ws = np.ones(num_items)
     else:
         ws = np.asarray(initial_params)
-    if alpha > 0:
-        vec1 = alpha / ws
-        vec2 = 1.0 - ws / num_items
-        chain = np.outer(vec1, vec2)
-    else:
-        chain = np.zeros((num_items, num_items), dtype=float)
+    chain = alpha * np.ones((num_items, num_items), dtype=float)
     return ws, chain
 
 
-def _ilsr(num_items, data, alpha, max_iter, eps, lsr_fun, ll_fun):
+def _ilsr(num_items, data, alpha, params, max_iter, tol, lsr_fun):
     """Iteratively refine LSR estimates until convergence.
 
     Raises
@@ -28,14 +23,11 @@ def _ilsr(num_items, data, alpha, max_iter, eps, lsr_fun, ll_fun):
     RuntimeError
         If the algorithm does not converge after `max_iter` iterations.
     """
-    params = np.ones(num_items)
-    prev_loglik = -np.inf
+    converged = NormOfDifferenceTest(tol, order=1)
     for _ in range(max_iter):
         params = lsr_fun(num_items, data, alpha=alpha, initial_params=params)
-        loglik = ll_fun(data, params)
-        if abs(loglik - prev_loglik) < eps:
+        if converged(params):
             return params
-        prev_loglik = loglik
     raise RuntimeError("Did not converge after {} iterations".format(max_iter))
 
 
@@ -49,6 +41,10 @@ def lsr_pairwise(num_items, data, alpha=0.0, initial_params=None):
     existing parameter estimate (see the implementation of
     :func:`~choix.ilsr_pairwise` for an idea on how this works). If it is set
     to `None` (the default), the all-ones vector is used.
+
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
 
     Parameters
     ----------
@@ -73,16 +69,17 @@ def lsr_pairwise(num_items, data, alpha=0.0, initial_params=None):
     return statdist(chain)
 
 
-def ilsr_pairwise(num_items, data, alpha=0.0, max_iter=100, eps=1e-8):
+def ilsr_pairwise(num_items, data, alpha=0.0, initial_params=None,
+        max_iter=100, tol=1e-8):
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
     parameters given pairwise comparison data (see :ref:`data-pairwise`), using
     the iterative Luce Spectral Ranking algorithm [MG15]_.
 
-    If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
-    estimate under a (peaked) Dirichlet prior. See :ref:`regularization` for
-    details.
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
 
     Parameters
     ----------
@@ -92,19 +89,21 @@ def ilsr_pairwise(num_items, data, alpha=0.0, max_iter=100, eps=1e-8):
         Pairwise comparison data.
     alpha : float, optional
         Regularization parameter.
+    initial_params : array_like, optional
+        Parameters used to initialize the iterative procedure.
     max_iter : int, optional
         Maximum number of iterations allowed.
-    eps : float, optional
-        Minimum difference between successive log-likelihoods to declare
-        convergence.
+    tol : float, optional
+        Maximum L1-norm of the difference between successive iterates to
+        declare convergence.
 
     Returns
     -------
     params : np.array
         The ML estimate of model parameters.
     """
-    return _ilsr(num_items, data, alpha, max_iter, eps,
-            lsr_pairwise, log_likelihood_pairwise)
+    return _ilsr(num_items, data, alpha, initial_params, max_iter, tol,
+            lsr_pairwise)
 
 
 def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
@@ -117,6 +116,10 @@ def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
     existing parameter estimate (see the implementation of
     :func:`~choix.ilsr_rankings` for an idea on how this works). If it is set
     to `None` (the default), the all-ones vector is used.
+
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
 
     Parameters
     ----------
@@ -146,16 +149,17 @@ def lsr_rankings(num_items, data, alpha=0.0, initial_params=None):
     return statdist(chain)
 
 
-def ilsr_rankings(num_items, data, max_iter=100, eps=1e-8):
+def ilsr_rankings(num_items, data, alpha=0.0, initial_params=None,
+        max_iter=100, tol=1e-8):
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
     parameters given ranking data (see :ref:`data-rankings`), using the
     iterative Luce Spectral Ranking algorithm [MG15]_.
 
-    If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
-    estimate under a (peaked) Dirichlet prior. See :ref:`regularization` for
-    details.
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
 
     Parameters
     ----------
@@ -165,19 +169,21 @@ def ilsr_rankings(num_items, data, max_iter=100, eps=1e-8):
         Ranking data.
     alpha : float, optional
         Regularization parameter.
+    initial_params : array_like, optional
+        Parameters used to initialize the iterative procedure.
     max_iter : int, optional
         Maximum number of iterations allowed.
-    eps : float, optional
-        Minimum difference between successive log-likelihoods to declare
-        convergence.
+    tol : float, optional
+        Maximum L1-norm of the difference between successive iterates to
+        declare convergence.
 
     Returns
     -------
     params : np.array
         The ML estimate of model parameters.
     """
-    return _ilsr(num_items, data, max_iter, eps,
-            lsr_rankings, log_likelihood_rankings)
+    return _ilsr(num_items, data, alpha, initial_params, max_iter, tol,
+            lsr_rankings)
 
 
 def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
@@ -190,6 +196,10 @@ def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
     existing parameter estimate (see the implementation of
     :func:`~choix.ilsr_top1` for an idea on how this works). If it is set to
     `None` (the default), the all-ones vector is used.
+
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
 
     Parameters
     ----------
@@ -216,7 +226,8 @@ def lsr_top1(num_items, data, alpha=0.0, initial_params=None):
     return statdist(chain)
 
 
-def ilsr_top1(num_items, data, max_iter=100, eps=1e-8):
+def ilsr_top1(num_items, data, alpha=0.0, initial_params=None,
+        max_iter=100, tol=1e-8):
     raise RuntimeError("not yet implemented.")
-    #return _ilsr(num_items, data, max_iter, eps,
+    #return _ilsr(num_items, data, max_iter, tol,
     #        lsr_pairwise, log_likelihood_pairwise)
