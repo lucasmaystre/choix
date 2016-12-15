@@ -144,7 +144,7 @@ def statdist(generator):
     return (n / res.sum()) * res
 
 
-def generate_pairwise(params, num_comparisons=10):
+def generate_pairwise(params, n_comparisons=10):
     """Generate pairwise comparisons from a Bradley--Terry model.
 
     This function samples comparisons pairs independently and uniformly at
@@ -156,7 +156,7 @@ def generate_pairwise(params, num_comparisons=10):
     ----------
     params : array_like
         The parameters of the Bradley--Terry model.
-    num_comparisons : int
+    n_comparisons : int
         The number of comparisons to be returned.
 
     Returns
@@ -168,7 +168,7 @@ def generate_pairwise(params, num_comparisons=10):
     items = tuple(range(n))
     params = np.asarray(params)
     data = list()
-    for _ in range(num_comparisons):
+    for _ in range(n_comparisons):
         # Pick the pair uniformly at random.
         a, b = random.sample(items, 2)
         if compare((a, b), params) == a:
@@ -178,7 +178,7 @@ def generate_pairwise(params, num_comparisons=10):
     return tuple(data)
 
 
-def generate_rankings(params, num_rankings, size=3):
+def generate_rankings(params, n_rankings, size=3):
     """Generate rankings according to a Plackett--Luce model.
 
     This function samples subsets of items (of size ``size``) independently and
@@ -189,7 +189,7 @@ def generate_rankings(params, num_rankings, size=3):
     ----------
     params : array_like
         Model parameters.
-    num_rankings : int
+    n_rankings : int
         Number of rankings to generate.
     size : int, optional
         Number of items to include in each ranking.
@@ -204,7 +204,7 @@ def generate_rankings(params, num_rankings, size=3):
     items = tuple(range(n))
     params = np.asarray(params)
     data = list()
-    for _ in range(num_rankings):
+    for _ in range(n_rankings):
         # Pick the alternatives uniformly at random.
         alts = random.sample(items, size)
         ranking = compare(alts, params, rank=True)
