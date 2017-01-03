@@ -138,7 +138,7 @@ def statdist(generator):
     except:
         # Ideally we would like to catch `spl.LinAlgError` only, but there seems
         # to be a bug in scipy, in the code that raises the LinAlgError (!!).
-        raise ValueError("stationary distribution could not be computed."
+        raise ValueError("stationary distribution could not be computed. "
                 "Perhaps the Markov chain has more than one absorbing class?")
     res = np.append(res, 1.0)
     return (n / res.sum()) * res
