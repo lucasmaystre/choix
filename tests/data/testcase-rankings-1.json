@@ -1,0 +1,7 @@
+{
+  "desc": "Condorcet-paradox-style cyclic preferences on three items.",
+  "n_items": 3,
+  "data": [[0, 1, 2], [1, 2, 0], [2, 0, 1]],
+  "ml_est": [1.0, 1.0, 1.0],
+  "lsr_est": [1.0, 1.0, 1.0]
+}

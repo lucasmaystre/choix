@@ -2,5 +2,6 @@
   "desc": "Cycle on three items.",
   "n_items": 3,
   "data": [[0, 1], [1, 2], [2, 0]],
-  "ml_est": [1.0, 1.0, 1.0]
+  "ml_est": [1.0, 1.0, 1.0],
+  "lsr_est": [1.0, 1.0, 1.0]
 }

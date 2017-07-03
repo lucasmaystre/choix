@@ -1,4 +1,5 @@
 """(Iterative) Luce Spectral Ranking inference algorithms."""
+
 import numpy as np
 
 from .convergence import NormOfDifferenceTest
@@ -228,6 +229,35 @@ def lsr_top1(n_items, data, alpha=0.0, initial_params=None):
 
 def ilsr_top1(n_items, data, alpha=0.0, initial_params=None,
         max_iter=100, tol=1e-8):
-    raise RuntimeError("not yet implemented.")
-    #return _ilsr(n_items, data, max_iter, tol,
-    #        lsr_pairwise, log_likelihood_pairwise)
+    """Compute the ML estimate of model parameters using I-LSR.
+
+    This function computes the maximum-likelihood (ML) estimate of model
+    parameters given top-1 data (see :ref:`data-top1`), using the
+    iterative Luce Spectral Ranking algorithm [MG15]_.
+
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
+
+    Parameters
+    ----------
+    n_items : int
+        Number of distinct items.
+    data : list of lists
+        Top-1 data.
+    alpha : float, optional
+        Regularization parameter.
+    initial_params : array_like, optional
+        Parameters used to initialize the iterative procedure.
+    max_iter : int, optional
+        Maximum number of iterations allowed.
+    tol : float, optional
+        Maximum L1-norm of the difference between successive iterates to
+        declare convergence.
+
+    Returns
+    -------
+    params : np.array
+        The ML estimate of model parameters.
+    """
+    return _ilsr(n_items, data, alpha, initial_params, max_iter, tol, lsr_top1)

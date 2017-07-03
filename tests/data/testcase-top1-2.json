@@ -1,0 +1,7 @@
+{
+  "desc": "Simple case with lists of different sizes.",
+  "n_items": 3,
+  "data": [[0, [1]], [1, [2]], [2, [0, 1]]],
+  "ml_est": [1.14589804, 0.70820393, 1.14589803],
+  "lsr_est": [1.08, 0.72, 1.2]
+}

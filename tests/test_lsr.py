@@ -8,7 +8,13 @@ from unittest.mock import Mock
 from tutils import iter_testcases
 
 
+# Tolerance values for calls to `numpy.allclose`.
+ATOL = 1e-8
+RTOL = 1e-3
+
+
 def test_ilsr_tolerance():
+    """Tolerance affects the number of iterations."""
     vals = [np.exp([-0.5, 0.5]), np.exp([-0.3, 0.3]),
             np.exp([-0.2, 0.2]), np.exp([-0.25, 0.25])]
     lsr = Mock(side_effect=vals)
@@ -19,6 +25,7 @@ def test_ilsr_tolerance():
 
 
 def test_ilsr_max_iter():
+    """Low `max_iter` raises `RuntimeError`."""
     vals = [np.exp([-0.5, 0.5]), np.exp([-0.3, 0.3]),
             np.exp([-0.2, 0.2]), np.exp([-0.25, 0.25])]
     lsr = Mock(side_effect=vals)
@@ -28,16 +35,60 @@ def test_ilsr_max_iter():
 
 
 def test_lsr_pairwise():
-    data1 = ((0,1), (1,2), (2,0))
-    est1 = lsr_pairwise(3, data1)
-    assert np.allclose(est1, np.array([1.0, 1.0, 1.0]))
-    data2 = ((0,1), (0,1), (1,2), (2,0))
-    est2 = lsr_pairwise(3, data2)
-    assert np.allclose(est2, np.array([1.2, 0.6, 1.2]))
-
-
-def test_ilsr_pairwise():
+    """JSON test cases for LSR pairwise."""
     for case in iter_testcases('pairwise'):
         n_items = case["n_items"]
         data = case["data"]
-        assert np.allclose(case["ml_est"], ilsr_pairwise(n_items, data))
+        assert np.allclose(
+                case["lsr_est"], lsr_pairwise(n_items, data),
+                atol=ATOL, rtol=RTOL)
+
+
+def test_ilsr_pairwise():
+    """JSON test cases for I-LSR pairwise."""
+    for case in iter_testcases('pairwise'):
+        n_items = case["n_items"]
+        data = case["data"]
+        assert np.allclose(
+                case["ml_est"], ilsr_pairwise(n_items, data),
+                atol=ATOL, rtol=RTOL)
+
+
+def test_lsr_rankings():
+    """JSON test cases for LSR rankings."""
+    for case in iter_testcases('rankings'):
+        n_items = case["n_items"]
+        data = case["data"]
+        assert np.allclose(
+                case["lsr_est"], lsr_rankings(n_items, data),
+                atol=ATOL, rtol=RTOL)
+
+
+def test_ilsr_rankings():
+    """JSON test cases for I-LSR rankings."""
+    for case in iter_testcases('rankings'):
+        n_items = case["n_items"]
+        data = case["data"]
+        assert np.allclose(
+                case["ml_est"], ilsr_rankings(n_items, data),
+                atol=ATOL, rtol=RTOL)
+
+
+def test_lsr_top1():
+    """JSON test cases for LSR top1."""
+    for case in iter_testcases('top1'):
+        n_items = case["n_items"]
+        data = case["data"]
+        assert np.allclose(
+                case["lsr_est"], lsr_top1(n_items, data),
+                atol=ATOL, rtol=RTOL)
+
+
+def test_ilsr_top1():
+    """JSON test cases for I-LSR top1."""
+    for case in iter_testcases('top1'):
+        n_items = case["n_items"]
+        data = case["data"]
+        assert np.allclose(
+                case["ml_est"], ilsr_top1(n_items, data),
+                atol=ATOL, rtol=RTOL)
