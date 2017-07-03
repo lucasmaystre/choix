@@ -8,6 +8,7 @@ from .lsr import (
     ilsr_pairwise,
     ilsr_rankings,
     ilsr_top1,
+    rank_centrality,
 )
 
 from .mm import (

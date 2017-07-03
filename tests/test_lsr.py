@@ -54,6 +54,16 @@ def test_ilsr_pairwise():
                 atol=ATOL, rtol=RTOL)
 
 
+def test_rank_centrality():
+    """JSON test cases for Rank Centrality."""
+    for case in iter_testcases('pairwise'):
+        n_items = case["n_items"]
+        data = case["data"]
+        assert np.allclose(
+                case["rc_est"], rank_centrality(n_items, data),
+                atol=ATOL, rtol=RTOL)
+
+
 def test_lsr_rankings():
     """JSON test cases for LSR rankings."""
     for case in iter_testcases('rankings'):

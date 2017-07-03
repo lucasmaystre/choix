@@ -1,4 +1,4 @@
-"""(Iterative) Luce Spectral Ranking inference algorithms."""
+"""(Iterative) Luce Spectral Ranking and related inference algorithms."""
 
 import numpy as np
 
@@ -105,6 +105,42 @@ def ilsr_pairwise(n_items, data, alpha=0.0, initial_params=None,
     """
     return _ilsr(n_items, data, alpha, initial_params, max_iter, tol,
             lsr_pairwise)
+
+
+def rank_centrality(n_items, data, alpha=0.0):
+    """Compute the Rank Centrality estimate of model parameters.
+
+    This function implements Negahban et al.'s Rank Centrality algorithm
+    [NOS12]_. The algorithm is similar to :func:`~choix.ilsr_pairwise`, but
+    considers the *ratio* of wins for each pair (instead of the total count).
+
+    The transition rates of the Rank Centrality Markov chain are initialized
+    with ``alpha``. When ``alpha > 0``, this corresponds to a form of
+    regularization (see :ref:`regularization` for details).
+
+    Parameters
+    ----------
+    n_items : int
+        Number of distinct items.
+    data : list of lists
+        Pairwise comparison data.
+    alpha : float, optional
+        Regularization parameter.
+
+    Returns
+    -------
+    params : np.array
+        An estimate of model parameters.
+    """
+    ws, chain = _init_lsr(n_items, alpha, None)
+    for winner, loser in data:
+        chain[loser, winner] += 1.0
+    # Transform the counts into ratios.
+    idx = chain > 0  # Indices (i,j) of non-zero entries.
+    chain[idx] = chain[idx] / (chain + chain.T)[idx]
+    # Finalize the Markov chain by adding the self-transition rate.
+    chain -= np.diag(chain.sum(axis=1))
+    return statdist(chain)
 
 
 def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
