@@ -30,6 +30,7 @@ Functions that :ref:`process rankings <process-rankings>`.
    choix.lsr_rankings
    choix.ilsr_rankings
    choix.opt_rankings
+   choix.mm_rankings
    choix.log_likelihood_rankings
 
 Functions that :ref:`process top-1 lists <process-top1>`.
@@ -40,6 +41,7 @@ Functions that :ref:`process top-1 lists <process-top1>`.
    choix.lsr_top1
    choix.ilsr_top1
    choix.opt_top1
+   choix.mm_top1
    choix.log_likelihood_top1
 
 
@@ -74,6 +76,7 @@ Processing rankings
 .. autofunction:: choix.lsr_rankings
 .. autofunction:: choix.ilsr_rankings
 .. autofunction:: choix.opt_rankings
+.. autofunction:: choix.mm_rankings
 .. autofunction:: choix.log_likelihood_rankings
 
 
@@ -85,4 +88,5 @@ Processing top-1 lists
 .. autofunction:: choix.lsr_top1
 .. autofunction:: choix.ilsr_top1
 .. autofunction:: choix.opt_top1
+.. autofunction:: choix.mm_top1
 .. autofunction:: choix.log_likelihood_top1

@@ -12,6 +12,8 @@ from .lsr import (
 
 from .mm import (
     mm_pairwise,
+    mm_rankings,
+    mm_top1,
 )
 
 from .utils import (

@@ -1,5 +1,6 @@
 """Minorization-maximization inference algorithms."""
 
+import itertools
 import numpy as np
 
 from .convergence import NormOfDifferenceTest
@@ -68,3 +69,103 @@ def mm_pairwise(n_items, data, initial_params=None, alpha=0.0,
     """
     return _mm(n_items, data, initial_params, alpha, max_iter, tol,
             _mm_pairwise)
+
+
+def _mm_rankings(n_items, data, params):
+    """Inner loop of MM algorithm for ranking data."""
+    wins = np.zeros(n_items, dtype=float)
+    denoms = np.zeros(n_items, dtype=float)
+    for ranking in data:
+        sum_ = params.take(ranking).sum()
+        for i, winner in enumerate(ranking[:-1]):
+            wins[winner] += 1
+            val = 1.0 / sum_
+            for item in ranking[i:]:
+                denoms[item] += val
+            sum_ -= params[winner]
+    return wins, denoms
+
+
+def mm_rankings(n_items, data, initial_params=None, alpha=0.0,
+        max_iter=10000, tol=1e-8):
+    """Compute the ML estimate of model parameters using the MM algorithm.
+
+    This function computes the maximum-likelihood (ML) estimate of model
+    parameters given ranking data (see :ref:`data-rankings`), using the
+    minorization-maximization (MM) algorithm [Hun04]_, [CD12]_.
+
+    If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
+    estimate under a (peaked) Dirichlet prior. See :ref:`regularization` for
+    details.
+
+    Parameters
+    ----------
+    n_items : int
+        Number of distinct items.
+    data : list of lists
+        Ranking data.
+    initial_params : array_like, optional
+        Parameters used to initialize the iterative procedure.
+    alpha : float, optional
+        Regularization parameter.
+    max_iter : int, optional
+        Maximum number of iterations allowed.
+    tol : float, optional
+        Maximum L1-norm of the difference between successive iterates to
+        declare convergence.
+
+    Returns
+    -------
+    params : np.array
+        The ML estimate of model parameters.
+    """
+    return _mm(n_items, data, initial_params, alpha, max_iter, tol,
+            _mm_rankings)
+
+
+def _mm_top1(n_items, data, params):
+    """Inner loop of MM algorithm for top1 data."""
+    wins = np.zeros(n_items, dtype=float)
+    denoms = np.zeros(n_items, dtype=float)
+    for winner, losers in data:
+        wins[winner] += 1
+        val = 1 / (params.take(losers).sum() + params[winner])
+        for item in itertools.chain([winner], losers):
+            denoms[item] += val
+    return wins, denoms
+
+
+def mm_top1(n_items, data, initial_params=None, alpha=0.0,
+        max_iter=10000, tol=1e-8):
+    """Compute the ML estimate of model parameters using the MM algorithm.
+
+    This function computes the maximum-likelihood (ML) estimate of model
+    parameters given top-1 data (see :ref:`data-top1`), using the
+    minorization-maximization (MM) algorithm [Hun04]_, [CD12]_.
+
+    If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
+    estimate under a (peaked) Dirichlet prior. See :ref:`regularization` for
+    details.
+
+    Parameters
+    ----------
+    n_items : int
+        Number of distinct items.
+    data : list of lists
+        Top-1 data.
+    initial_params : array_like, optional
+        Parameters used to initialize the iterative procedure.
+    alpha : float, optional
+        Regularization parameter.
+    max_iter : int, optional
+        Maximum number of iterations allowed.
+    tol : float, optional
+        Maximum L1-norm of the difference between successive iterates to
+        declare convergence.
+
+    Returns
+    -------
+    params : np.array
+        The ML estimate of model parameters.
+    """
+    return _mm(n_items, data, initial_params, alpha, max_iter, tol, _mm_top1)
