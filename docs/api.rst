@@ -9,6 +9,7 @@ Functions that :ref:`generate parameters and data <generators>`.
    choix.generate_pairwise
    choix.generate_rankings
    choix.footrule_dist
+   choix.compare
 
 Functions that :ref:`process pairwise comparisons <process-pairwise>`.
 
@@ -62,6 +63,7 @@ Generators
 .. autofunction:: choix.generate_pairwise
 .. autofunction:: choix.generate_rankings
 .. autofunction:: choix.footrule_dist
+.. autofunction:: choix.compare
 
 
 .. _process-pairwise:
