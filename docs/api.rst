@@ -6,6 +6,7 @@ Functions that :ref:`generate parameters and data <generators>`.
 .. autosummary::
    :nosignatures:
 
+   choix.generate_params
    choix.generate_pairwise
    choix.generate_rankings
    choix.footrule_dist
@@ -60,6 +61,7 @@ Functions that :ref:`process choices in a network <process-network>`.
 Generators
 ----------
 
+.. autofunction:: choix.generate_params
 .. autofunction:: choix.generate_pairwise
 .. autofunction:: choix.generate_rankings
 .. autofunction:: choix.footrule_dist

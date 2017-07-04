@@ -24,6 +24,7 @@ from .utils import (
     log_likelihood_rankings,
     log_likelihood_top1,
     log_likelihood_network,
+    generate_params,
     generate_pairwise,
     generate_rankings,
     compare,

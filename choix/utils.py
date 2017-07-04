@@ -167,6 +167,39 @@ def statdist(generator):
     return (n / res.sum()) * res
 
 
+def generate_params(n_items, interval=5.0, in_decreasing_order=False):
+    r"""Generate random model parameters.
+
+    This function samples a parameter independently for each item. Each
+    parameter is drawn uniformly on a logarithmic scale, and ``interval``
+    defines the width of the uniform distribution. In other words, letting
+    :math:`\lambda_i` be the i-th parameter and :math:`W` be the interval, we
+    have that
+
+    .. math::
+
+      \lambda_i = \exp(x_i), \text{where } x_i \sim \mathrm{Unif}(0, W).
+
+    Parameters
+    ----------
+    n_items : int
+        Number of distinct items.
+    interval : float
+        Sampling interval.
+    in_decreasing_order : bool, optional
+        If true, the parameters are ordered from largest to smallest.
+
+    Returns
+    -------
+    params : np.array
+       Model parameters.
+    """
+    params = np.exp(np.random.uniform(low=0, high=interval, size=n_items))
+    if in_decreasing_order:
+        params = np.sort(params)[::-1]
+    return (n_items / params.sum()) * params 
+
+
 def generate_pairwise(params, n_comparisons=10):
     """Generate pairwise comparisons from a Bradley--Terry model.
 
@@ -178,14 +211,14 @@ def generate_pairwise(params, n_comparisons=10):
     Parameters
     ----------
     params : array_like
-        The parameters of the Bradley--Terry model.
+        Model parameters.
     n_comparisons : int
-        The number of comparisons to be returned.
+        Number of comparisons to be returned.
 
     Returns
     -------
     data : list of (int, int)
-       The samples (see :ref:`data-pairwise`).
+       Pairwise comparison samples (see :ref:`data-pairwise`).
     """
     n = len(params)
     items = tuple(range(n))
@@ -245,9 +278,9 @@ def compare(items, params, rank=False):
     Parameters
     ----------
     items : list
-        The subset of items to compare.
+        Subset of items to compare.
     params : array_like
-        The ``N`` parameters of the model.
+        Model parameters.
     rank : bool, optional
         If true, returns a ranking over the items instead of a single item.
 

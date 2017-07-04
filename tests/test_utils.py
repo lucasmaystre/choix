@@ -151,6 +151,14 @@ def test_normpdf():
         np.allclose(normpdf(x), sps.norm.pdf(x))
 
 
+def test_generate_params():
+    """``generate_params`` should work as expected."""
+    params1 = generate_params(10)
+    assert len(params1) == 10
+    params2 = generate_params(10, in_decreasing_order=True)
+    assert params2.tolist() == sorted(params2, reverse=True)
+
+
 def test_generate_pairwise():
     """``generate_pairwise`` should work as expected."""
     params = np.exp(RND.rand(10))
