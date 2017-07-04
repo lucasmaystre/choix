@@ -34,7 +34,10 @@ setup(
         'scipy',
     ],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    tests_require=[
+        'pytest',
+        'networkx',
+    ],
     include_package_data=True,
     zip_safe=False,
 )

@@ -2,7 +2,7 @@ choix
 =====
 
 ``choix`` is a Python library that provides inference algorithms for models based
-on Luce's choice axiom. These (probabilistic) models can be used to explain and
+on Luce's choice axiom. These probabilistic models can be used to explain and
 predict outcomes of comparisons between items.
 
 - **Pairwise comparisons**: when the data consists of comparisons between two
@@ -14,6 +14,9 @@ predict outcomes of comparisons between items.
 - **Top-1 lists**: another variation of the model arises when the data consists
   of discrete choices, i.e., we observe the selection of one item out of a
   subset of items.
+- **Choices in a network**: when the data consists of counts of the number of
+  visits to each node in a network, the model is known as the *Network Choice
+  Model*.
 
 ``choix`` makes it easy to infer model parameters from these different types of
 data, using a variety of algorithms:
@@ -21,8 +24,7 @@ data, using a variety of algorithms:
 * Luce Spectral Ranking
 * Minorization-Maximization
 * Rank Centrality
-* GMM using rank breaking
-* Approximate bayesian inference with expectation propagation
+* Approximate Bayesian inference with expectation propagation
 
 
 Contents
@@ -38,11 +40,9 @@ Contents
    references
 
 
-
 Indices and tables
 ------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

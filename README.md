@@ -5,7 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/choix/badge/?version=latest)](http://choix.lum.li/en/latest/?badge=latest)
 
 `choix` is a Python library that provides inference algorithms for models based
-on Luce's choice axiom. These (probabilistic) models can be used to explain and
+on Luce's choice axiom. These probabilistic models can be used to explain and
 predict outcomes of comparisons between items.
 
 - **Pairwise comparisons**: when the data consists of comparisons between two
@@ -17,6 +17,9 @@ predict outcomes of comparisons between items.
 - **Top-1 lists**: another variation of the model arises when the data consists
   of discrete choices, i.e., we observe the selection of one item out of a
   subset of items.
+- **Choices in a network**: when the data consists of counts of the number of
+  visits to each node in a network, the model is known as the *Network Choice
+  Model*.
 
 `choix` makes it easy to infer model parameters from these different types of
 data, using a variety of algorithms:
@@ -24,8 +27,7 @@ data, using a variety of algorithms:
 - Luce Spectral Ranking
 - Minorization-Maximization
 - Rank Centrality
-- GMM using rank breaking
-- Approximate bayesian inference with expectation propagation
+- Approximate Bayesian inference with expectation propagation
 
 ## Installation
 
@@ -37,24 +39,30 @@ The library is under active development, use at your own risk.
 
 ## References
 
-- Lucas Maystre and Matthias Grossglauser, [Fast and Accurate Inference of
-  Plackett-Luce Models][1], NIPS, 2015
-- David R. Hunter. [MM algorithms for generalized Bradley-Terry models][2], The
-  Annals of Statistics 32(1):384-406, 2004.
-- François Caron and Arnaud Doucet. [Efficient Bayesian Inference for
-  Generalized Bradley-Terry models][3]. Journal of Computational and Graphical
-  Statistics, 21(1):174-196, 2012.
-- Sahand Negahban, Sewoong Oh, and Devavrat Shah, [Iterative Ranking from
-  Pair-wise Comparison][4], NIPS 2012
 - Hossein Azari Soufiani, William Z. Chen, David C. Parkes, and Lirong Xia,
-  [Generalized Method-of-Moments for Rank Aggregation][5], NIPS 2013
+  [Generalized Method-of-Moments for Rank Aggregation][1], NIPS 2013
+- François Caron and Arnaud Doucet. [Efficient Bayesian Inference for
+  Generalized Bradley-Terry models][2]. Journal of Computational and Graphical
+  Statistics, 21(1):174-196, 2012.
 - Wei Chu and Zoubin Ghahramani, [Extensions of Gaussian processes for ranking:
-  semi-supervised and active learning][6], NIPS 2005 Workshop on Learning to
+  semi-supervised and active learning][3], NIPS 2005 Workshop on Learning to
   Rank.
+- David R. Hunter. [MM algorithms for generalized Bradley-Terry models][4], The
+  Annals of Statistics 32(1):384-406, 2004.
+- Ravi Kumar, Andrew Tomkins, Sergei Vassilvitskii and Erik Vee, [Inverting a
+  Steady-State][5], WSDM 2015.
+- Lucas Maystre and Matthias Grossglauser, [Fast and Accurate Inference of
+  Plackett-Luce Models][6], NIPS, 2015.
+- Lucas Maystre and M. Grossglauser, [ChoiceRank: Identifying Preferences
+  from Node Traffic in Networks][7], ICML 2017.
+- Sahand Negahban, Sewoong Oh, and Devavrat Shah, [Iterative Ranking from
+  Pair-wise Comparison][8], NIPS 2012.
 
-[1]: https://infoscience.epfl.ch/record/213486/files/fastinference.pdf
-[2]: http://sites.stat.psu.edu/~dhunter/papers/bt.pdf
-[3]: https://hal.inria.fr/inria-00533638/document
-[4]: https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf
-[5]: https://papers.nips.cc/paper/4997-generalized-method-of-moments-for-rank-aggregation.pdf
-[6]: http://www.gatsby.ucl.ac.uk/~chuwei/paper/gprl.pdf
+[1]: https://papers.nips.cc/paper/4997-generalized-method-of-moments-for-rank-aggregation.pdf
+[2]: https://hal.inria.fr/inria-00533638/document
+[3]: http://www.gatsby.ucl.ac.uk/~chuwei/paper/gprl.pdf
+[4]: http://sites.stat.psu.edu/~dhunter/papers/bt.pdf
+[5]: http://theory.stanford.edu/~sergei/papers/wsdm15-cset.pdf
+[6]: https://infoscience.epfl.ch/record/213486/files/fastinference.pdf
+[7]: https://infoscience.epfl.ch/record/229164/files/choicerank.pdf
+[8]: https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf

@@ -1,3 +1,4 @@
+import networkx as nx
 import numpy as np
 import pytest
 import scipy.stats as sps
@@ -73,6 +74,22 @@ def test_log_likelihood_top1():
             -(log(4) + log(3)))
     assert np.allclose(log_likelihood_top1(data, params2),
             -2.420368128650429)
+
+
+def test_log_likelihood_network():
+    digraph = nx.DiGraph()
+    digraph.add_weighted_edges_from(((0, 1, 1.0), (0, 2, 2.0)))
+    traffic_in = [0, 2, 4]
+    traffic_out = [6, 0, 0]
+    params = [1.0, 2.0, 3.0]
+    assert np.allclose(
+            log_likelihood_network(
+                    digraph, traffic_in, traffic_out, params, weight=None),
+            2 * log(2 / 5) + 4 * log(3 / 5))
+    assert np.allclose(
+            log_likelihood_network(
+                    digraph, traffic_in, traffic_out, params, weight="weight"),
+            2 * log(2 / 8) + 4 * log(3 / 8))
 
 
 def test_statdist():

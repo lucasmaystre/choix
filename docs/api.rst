@@ -45,6 +45,14 @@ Functions that :ref:`process top-1 lists <process-top1>`.
    choix.mm_top1
    choix.log_likelihood_top1
 
+Functions that :ref:`process choices in a network <process-network>`.
+
+.. autosummary::
+   :nosignatures:
+
+   choix.choicerank
+   choix.log_likelihood_network
+
 
 .. _generators:
 
@@ -92,3 +100,12 @@ Processing top-1 lists
 .. autofunction:: choix.opt_top1
 .. autofunction:: choix.mm_top1
 .. autofunction:: choix.log_likelihood_top1
+
+
+.. _process-network:
+
+Processing choices in a network
+-------------------------------
+
+.. autofunction:: choix.choicerank
+.. autofunction:: choix.log_likelihood_network

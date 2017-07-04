@@ -15,6 +15,7 @@ from .mm import (
     mm_pairwise,
     mm_rankings,
     mm_top1,
+    choicerank,
 )
 
 from .utils import (
@@ -22,6 +23,7 @@ from .utils import (
     log_likelihood_pairwise,
     log_likelihood_rankings,
     log_likelihood_top1,
+    log_likelihood_network,
     generate_pairwise,
     generate_rankings,
     compare,

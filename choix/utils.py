@@ -103,6 +103,28 @@ def log_likelihood_top1(data, params):
     return loglik
 
 
+def log_likelihood_network(
+        digraph, traffic_in, traffic_out, params, weight=None):
+    """
+    Compute the log-likelihood of model parameters.
+
+    If ``weight`` is not ``None``, the log-likelihood is correct only up to a
+    constant (independent of the parameters).
+    """
+    loglik = 0
+    for i in range(len(traffic_in)):
+        loglik += traffic_in[i] * math.log(params[i])
+        if digraph.out_degree(i) > 0:
+            tot = 0
+            for j in digraph.successors_iter(i):
+                if weight is not None:
+                    tot += digraph[i][j][weight] * params[j]
+                else:
+                    tot += params[j]
+            loglik -= traffic_out[i] * math.log(tot)
+    return loglik
+
+
 def statdist(generator):
     """Compute the stationary distribution of a Markov chain.
 
