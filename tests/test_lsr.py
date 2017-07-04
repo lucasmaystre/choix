@@ -18,8 +18,8 @@ def test_ilsr_tolerance():
     vals = [np.exp([-0.5, 0.5]), np.exp([-0.3, 0.3]),
             np.exp([-0.2, 0.2]), np.exp([-0.25, 0.25])]
     lsr = Mock(side_effect=vals)
-    est = _ilsr(2, [], alpha=0.0, params=None, max_iter=100, tol=0.15,
-            lsr_fun=lsr)
+    est = _ilsr(
+            2, [], alpha=0.0, params=None, max_iter=100, tol=0.15, lsr_fun=lsr)
     assert np.array_equal(est, vals[2])
     assert lsr.call_count == 3
 

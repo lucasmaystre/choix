@@ -103,8 +103,8 @@ def ilsr_pairwise(n_items, data, alpha=0.0, initial_params=None,
     params : np.array
         The ML estimate of model parameters.
     """
-    return _ilsr(n_items, data, alpha, initial_params, max_iter, tol,
-            lsr_pairwise)
+    return _ilsr(
+            n_items, data, alpha, initial_params, max_iter, tol, lsr_pairwise)
 
 
 def rank_centrality(n_items, data, alpha=0.0):
@@ -219,8 +219,8 @@ def ilsr_rankings(n_items, data, alpha=0.0, initial_params=None,
     params : np.array
         The ML estimate of model parameters.
     """
-    return _ilsr(n_items, data, alpha, initial_params, max_iter, tol,
-            lsr_rankings)
+    return _ilsr(
+            n_items, data, alpha, initial_params, max_iter, tol, lsr_rankings)
 
 
 def lsr_top1(n_items, data, alpha=0.0, initial_params=None):

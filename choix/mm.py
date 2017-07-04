@@ -74,8 +74,8 @@ def mm_pairwise(n_items, data, initial_params=None, alpha=0.0,
     params : np.array
         The ML estimate of model parameters.
     """
-    return _mm(n_items, data, initial_params, alpha, max_iter, tol,
-            _mm_pairwise)
+    return _mm(
+            n_items, data, initial_params, alpha, max_iter, tol, _mm_pairwise)
 
 
 def _mm_rankings(n_items, data, params):

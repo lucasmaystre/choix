@@ -42,17 +42,18 @@ def test_log_likelihood_pairwise():
     data3 = ((0,1), (1,2), (2,0))
     params1 = np.ones(3)
     params2 = np.exp(np.arange(5))
-    assert np.allclose(log_likelihood_pairwise(data1, params1),
-            -log(2))
-    assert np.allclose(log_likelihood_pairwise(data2, params1),
-            -2 * log(2))
-    assert np.allclose(log_likelihood_pairwise(data3, params1),
-            -3 * log(2))
-    assert np.allclose(log_likelihood_pairwise(data1, params2),
-            -log(1 + e))
-    assert np.allclose(log_likelihood_pairwise(data2, params2),
-            1 - 2 * log(1 + e))
-    assert np.allclose(log_likelihood_pairwise(data3, params2),
+    assert np.allclose(
+            log_likelihood_pairwise(data1, params1), -log(2))
+    assert np.allclose(
+            log_likelihood_pairwise(data2, params1), -2 * log(2))
+    assert np.allclose(
+            log_likelihood_pairwise(data3, params1), -3 * log(2))
+    assert np.allclose(
+            log_likelihood_pairwise(data1, params2), -log(1 + e))
+    assert np.allclose(
+            log_likelihood_pairwise(data2, params2), 1 - 2 * log(1 + e))
+    assert np.allclose(
+            log_likelihood_pairwise(data3, params2),
             3 - log(1 + e) - log(e + e*e) - log(e*e + 1))
 
 
@@ -60,9 +61,11 @@ def test_log_likelihood_rankings():
     data = ((0,1,2,3),(1,3,0))
     params1 = e * np.ones(10)
     params2 = np.linspace(1,2, num=4)
-    assert np.allclose(log_likelihood_rankings(data, params1),
+    assert np.allclose(
+            log_likelihood_rankings(data, params1),
             -log(4) - 2 * (log(3) + log(2)))
-    assert np.allclose(log_likelihood_rankings(data, params2),
+    assert np.allclose(
+            log_likelihood_rankings(data, params2),
             -5.486092774024455)
 
 
@@ -70,10 +73,10 @@ def test_log_likelihood_top1():
     data = ((1, (0,2,3)), (3, (1,2)))
     params1 = e * np.ones(10)
     params2 = np.linspace(1,2, num=4)
-    assert np.allclose(log_likelihood_top1(data, params1),
-            -(log(4) + log(3)))
-    assert np.allclose(log_likelihood_top1(data, params2),
-            -2.420368128650429)
+    assert np.allclose(
+            log_likelihood_top1(data, params1), -(log(4) + log(3)))
+    assert np.allclose(
+            log_likelihood_top1(data, params2), -2.420368128650429)
 
 
 def test_log_likelihood_network():
@@ -110,7 +113,8 @@ def test_statdist_single_absorbing_class():
     # Markov chain where states 0 and 1 are transient, and 2 and 3 are
     # absorbing. It is weakly but not strongly connected, and has a single
     # absorbing class.
-    gen = np.array([[-1, 1, 0, 0], [1, -2, 1, 0], [0, 0, -1, 1], [0, 0, 1, -1]],
+    gen = np.array(
+            [[-1, 1, 0, 0], [1, -2, 1, 0], [0, 0, -1, 1], [0, 0, 1, -1]],
             dtype=float)
     dist = np.array([0., 0., 2., 2.])
     assert np.allclose(statdist(gen), dist)
@@ -122,13 +126,15 @@ def test_statdist_two_absorbing_classes():
     one absorbing class.
     """
     # Markov chain with two absorbing classes, (0, 1) and (3, 4).
-    gen1 = np.array([[-1, 1, 0, 0, 0], [1, -1, 0, 0, 0], [0, 1, -2, 1, 0],
+    gen1 = np.array(
+            [[-1, 1, 0, 0, 0], [1, -1, 0, 0, 0], [0, 1, -2, 1, 0],
             [0, 0, 0, -1, 1], [0, 0, 0, 1, -1]], dtype=float)
     with pytest.raises(ValueError):
         x = statdist(gen1)
     # Markov with two disconnected components, (0, 1) and (2, 3).
-    gen2 = np.array([[-1, 1, 0, 0], [1, -1, 0, 0], [0, 0, -1, 1],
-            [0, 0, 1, -1]], dtype=float)
+    gen2 = np.array(
+            [[-1, 1, 0, 0], [1, -1, 0, 0], [0, 0, -1, 1], [0, 0, 1, -1]],
+            dtype=float)
     with pytest.raises(ValueError):
         x = statdist(gen2)
 

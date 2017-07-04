@@ -118,12 +118,14 @@ def _opt(n_items, fcts, method, initial_params, max_iter, tol):
     if method == "Newton-CG":
         # `xtol`: Average relative error in solution xopt acceptable for
         # convergence [scipy doc].
-        res = minimize(fcts.objective, x0, method=method, jac=fcts.gradient,
+        res = minimize(
+                fcts.objective, x0, method=method, jac=fcts.gradient,
                 hess=fcts.hessian, options={"xtol": tol, "maxiter": max_iter})
     elif method == "BFGS":
         # `gtol`: Gradient norm must be less than gtol before successful
         # termination [scipy doc].
-        res = minimize(fcts.objective, x0, method=method, jac=fcts.gradient,
+        res = minimize(
+                fcts.objective, x0, method=method, jac=fcts.gradient,
                 options={"gtol": tol, "maxiter": max_iter})
     else:
         raise ValueError("method not known")

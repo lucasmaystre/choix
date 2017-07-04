@@ -83,7 +83,8 @@ def test_opt_pairwise_simple():
     """Simple test where regularization is needed (ML does not exist)."""
     for method in ("BFGS", "Newton-CG"):
         for params in (None, np.exp(RND.randn(8))):
-            est = opt_pairwise(8, PAIRWISE_DATA, penalty=0.5, method=method,
+            est = opt_pairwise(
+                    8, PAIRWISE_DATA, penalty=0.5, method=method,
                     initial_params=params)
             assert np.allclose(est, PAIRWISE_ESTIMATE)
 
@@ -92,7 +93,8 @@ def test_opt_top1_simple():
     """Simple test where regularization is needed (ML does not exist)."""
     for method in ("BFGS", "Newton-CG"):
         for params in (None, np.exp(RND.randn(8))):
-            est = opt_top1(8, TOP1_DATA, penalty=0.5, method=method,
+            est = opt_top1(
+                    8, TOP1_DATA, penalty=0.5, method=method,
                     initial_params=params)
             assert np.allclose(est, TOP1_ESTIMATE)
 
