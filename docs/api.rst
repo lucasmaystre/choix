@@ -9,8 +9,15 @@ Functions that :ref:`generate parameters and data <generators>`.
    choix.generate_params
    choix.generate_pairwise
    choix.generate_rankings
-   choix.footrule_dist
    choix.compare
+
+Functions that :ref:`compute distances between models <distances>`.
+
+.. autosummary::
+   :nosignatures:
+
+   choix.footrule_dist
+   choix.kendalltau_dist
 
 Functions that :ref:`process pairwise comparisons <process-pairwise>`.
 
@@ -64,8 +71,16 @@ Generators
 .. autofunction:: choix.generate_params
 .. autofunction:: choix.generate_pairwise
 .. autofunction:: choix.generate_rankings
-.. autofunction:: choix.footrule_dist
 .. autofunction:: choix.compare
+
+
+.. _distances:
+
+Distances
+---------
+
+.. autofunction:: choix.footrule_dist
+.. autofunction:: choix.kendalltau_dist
 
 
 .. _process-pairwise:

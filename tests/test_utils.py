@@ -36,6 +36,34 @@ def test_footrule_dist_default():
     assert footrule_dist(params3) == 25.0
 
 
+def test_kendalltau_dist_error():
+    params1 = np.arange(3, dtype=float)
+    params2 = np.arange(4, dtype=float)
+    with pytest.raises(AssertionError):
+        kendalltau_dist(params1, params2)
+
+
+def test_kendalltau_dist_simple_cases():
+    params1 = np.array([+1.0, -1.2, +0.0])
+    params2 = np.array([+1.5, -0.2, -0.2])
+    params3 = np.array([-1.0, +1.2, +0.0])
+    for params in (params1, params2, params3):
+        assert kendalltau_dist(params, params) == 0.0
+    assert kendalltau_dist(params1, params2) == 1.0
+    assert kendalltau_dist(params1, params3) == 3.0
+    assert kendalltau_dist(params2, params3) == 2.0
+
+
+def test_kendalltau_dist_default():
+    params1 = np.arange(0, 10)
+    assert kendalltau_dist(params1) == (10 * 9) / 2
+    params2 = np.arange(0, -10, -1)
+    assert kendalltau_dist(params2) == 0
+    # This is a deceptive case, the ties just happen to be resolved correctly.
+    params3 = np.ones(10)
+    assert kendalltau_dist(params3) == 0
+
+
 def test_log_likelihood_pairwise():
     data1 = ((0,1),)
     data2 = ((0,1), (1,0))

@@ -5,7 +5,7 @@ import scipy.linalg as spl
 import warnings
 
 from scipy.linalg import solve_triangular
-from scipy.stats import rankdata
+from scipy.stats import rankdata, kendalltau
 
 
 SQRT2 = math.sqrt(2.0)
@@ -38,9 +38,10 @@ def footrule_dist(params1, params2=None):
     r"""Compute Spearman's footrule distance between two models.
 
     This function computes Spearman's footrule distance between the rankings
-    induced by the two parameter vectors. Let :math:`\sigma_i` be the rank of
-    item ``i`` in the first model, and :math:`\tau_i` be its rank in the second
-    model. Spearman's footrule distance is defined by
+    induced by two parameter vectors. Let :math:`\sigma_i` be the rank of item
+    ``i`` in the model described by ``params1``, and :math:`\tau_i` be its rank
+    in the model described by ``params2``. Spearman's footrule distance is
+    defined by
 
     .. math::
 
@@ -70,6 +71,52 @@ def footrule_dist(params1, params2=None):
     else:
         ranks2 = rankdata(-params2, method="average")
     return np.sum(np.abs(ranks1 - ranks2))
+
+
+def kendalltau_dist(params1, params2=None):
+    r"""Compute the Kendall tau distance between two models.
+
+    This function computes the Kendall tau distance between the rankings
+    induced by two parameter vectors. Let :math:`\sigma_i` be the rank of item
+    ``i`` in the model described by ``params1``, and :math:`\tau_i` be its rank
+    in the model described by ``params2``. The Kendall tau distance is defined
+    as the number of pairwise disagreements between the two rankings, i.e.,
+
+    .. math::
+
+      \sum_{i=1}^N \sum_{j=1}^N
+        \mathbf{1} \{ \sigma_i > \sigma_j \wedge \tau_i < \tau_j \}
+
+    If the argument ``params2`` is ``None``, the second model is assumed to
+    rank the items by their index: item ``0`` has rank 1, item ``1`` has rank
+    2, etc.
+
+    If some values are equal within a parameter vector, all items are given a
+    distinct rank, corresponding to the order in which the values occur.
+
+    Parameters
+    ----------
+    params1 : array_like
+        Parameters of the first model.
+    params2 : array_like, optional
+        Parameters of the second model.
+
+    Returns
+    -------
+    dist : float
+        Kendall tau distance.
+    """
+    assert params2 is None or len(params1) == len(params2)
+    # We use `-params` because the highest values should be ranked first.
+    ranks1 = rankdata(-params1, method="ordinal")
+    if params2 is None:
+        ranks2 = np.arange(1, len(params1) + 1, dtype=float)
+    else:
+        ranks2 = rankdata(-params2, method="ordinal")
+    tau, _ = kendalltau(ranks1, ranks2)
+    n_items = len(params1)
+    n_pairs = n_items * (n_items - 1) / 2
+    return round((n_pairs - n_pairs * tau) / 2)
 
 
 def log_likelihood_pairwise(data, params):
