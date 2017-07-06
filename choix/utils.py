@@ -32,18 +32,18 @@ def softmax(xs):
     return exps / exps.sum(axis=0)
 
 
-def normcdf(x):
+def normal_cdf(x):
     """Normal cumulative density function."""
     # If X ~ N(0,1), returns P(X < x).
     return math.erfc(-x / SQRT2) / 2.0
 
 
-def normpdf(x):
+def normal_pdf(x):
     """Normal probability density function."""
     return math.exp(-x*x / 2.0) / SQRT2PI
 
 
-def inv_pd(mat):
+def inv_posdef(mat):
     """Stable inverse of a positive definite matrix."""
     # See:
     # - http://www.seas.ucla.edu/~vandenbe/103/lectures/chol.pdf
@@ -216,7 +216,7 @@ def statdist(generator):
     with warnings.catch_warnings():
         # The LU decomposition raises a warning when the generator matrix is
         # singular (which it, by construction, is!).
-        warnings.filterwarnings('ignore')
+        warnings.filterwarnings("ignore")
         lu, piv = spl.lu_factor(generator.T, check_finite=False)
     # The last row contains 0's only.
     left = lu[:-1,:-1]

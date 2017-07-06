@@ -5,6 +5,7 @@ import scipy.stats as sps
 
 from choix.utils import *
 from math import log, e
+from scipy.linalg import inv
 
 
 RND = np.random.RandomState(42)
@@ -176,16 +177,23 @@ def test_softmax():
     assert np.allclose(softmax(params2), [0, 0, 1])
 
 
-def test_normcdf():
-    """``normcdf`` should return the value of the normal CDF."""
+def test_normal_cdf():
+    """``normal_cdf`` should return the value of the normal CDF."""
     for x in 3 * RND.randn(10):
-        np.allclose(normcdf(x), sps.norm.cdf(x))
+        np.allclose(normal_cdf(x), sps.norm.cdf(x))
 
 
-def test_normpdf():
-    """``normpdf`` should return the value of the normal PDF."""
+def test_normal_pdf():
+    """``normal_pdf`` should return the value of the normal PDF."""
     for x in 3 * RND.randn(10):
-        np.allclose(normpdf(x), sps.norm.pdf(x))
+        np.allclose(normal_pdf(x), sps.norm.pdf(x))
+
+
+def test_inv_posdef():
+    """``inv_posdef`` should return the correct inverse."""
+    mat = RND.randn(8, 8)
+    mat = mat.dot(mat.T)  # Make it positive semi-definite.
+    assert np.allclose(inv_posdef(mat), inv(mat))
 
 
 def test_generate_params():
