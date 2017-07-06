@@ -29,13 +29,22 @@ data, using a variety of algorithms:
 - Rank Centrality
 - Approximate Bayesian inference with expectation propagation
 
-## Installation
+## Getting started
 
-Simply type
+To install the latest release directly from PyPI, simply type
 
     pip install choix
 
-The library is under active development, use at your own risk.
+To get started, you might want to explore one of these notebooks:
+
+- [Introduction using pairwise comparison data](notebooks/intro-pairwise.ipynb)
+- [Using ChoiceRank to understand traffic on a network](notebooks/choicerank-tutorial.ipynb)
+- [Approximate Bayesian inference using EP](notebooks/ep-example.ipynb)
+
+You can also find more information on the [official
+documentation](http://choix.lum.li/en/latest/). In particular, the [API
+reference](http://choix.lum.li/en/latest/api.html) contains a good summary of
+the library's features.
 
 ## References
 
