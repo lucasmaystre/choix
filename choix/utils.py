@@ -358,7 +358,7 @@ def compare(items, params, rank=False):
 
 
 def probabilities(items, params):
-    """Compute the comparison outcome probabilities.
+    """Compute the comparison outcome probabilities given a subset of items.
 
     This function computes, for each item in ``items``, the probability that it
     would win (i.e., be chosen) in a comparison involving the items, given
