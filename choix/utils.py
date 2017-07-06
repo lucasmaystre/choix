@@ -346,9 +346,31 @@ def compare(items, params, rank=False):
     outcome : int or list of int
         The chosen item, or a ranking over ``items``.
     """
-    params = np.asarray(params)
-    probs = softmax(params.take(items))
+    probs = probabilities(items, params)
     if rank:
         return np.random.choice(items, size=len(items), replace=False, p=probs)
     else:
         return np.random.choice(items, p=probs)
+
+
+def probabilities(items, params):
+    """Compute the comparison outcome probabilities.
+
+    This function computes, for each item in ``items``, the probability that it
+    would win (i.e., be chosen) in a comparison involving the items, given
+    model parameters.
+
+    Parameters
+    ----------
+    items : list
+        Subset of items to compare.
+    params : array_like
+        Model parameters.
+
+    Returns
+    -------
+    probs : np.array
+        A probability distribution over ``items``.
+    """
+    params = np.asarray(params)
+    return softmax(params.take(items))

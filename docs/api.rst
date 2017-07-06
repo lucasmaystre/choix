@@ -11,11 +11,12 @@ Functions that :ref:`generate parameters and data <generators>`.
    choix.generate_rankings
    choix.compare
 
-Functions that :ref:`compute distances between models <distances>`.
+:ref:`Various utilities <utilities>` such as distance functions, etc.
 
 .. autosummary::
    :nosignatures:
 
+   choix.probabilities
    choix.footrule_dist
    choix.kendalltau_dist
 
@@ -74,11 +75,12 @@ Generators
 .. autofunction:: choix.compare
 
 
-.. _distances:
+.. _utilities:
 
-Distances
+Utilities
 ---------
 
+.. autofunction:: choix.probabilities
 .. autofunction:: choix.footrule_dist
 .. autofunction:: choix.kendalltau_dist
 

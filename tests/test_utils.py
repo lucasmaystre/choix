@@ -234,3 +234,10 @@ def test_compare_rankings():
     assert np.array_equal(x1, np.array([0, 3]))
     x2 = compare((3, 0, 1), params, rank=True)
     assert np.array_equal(x2, np.array([1, 0, 3]))
+
+
+def test_probabilities():
+    """``probabilities`` should work as expected."""
+    params = np.log([1, 2, 3, 4])
+    assert np.allclose(probabilities([0, 2, 3], params), [1/8, 3/8, 4/8])
+    assert np.allclose(probabilities([1, 0], params), [2/3, 1/3])

@@ -29,6 +29,7 @@ from .utils import (
     generate_pairwise,
     generate_rankings,
     compare,
+    probabilities,
 )
 
 from .ep import ep_pairwise
