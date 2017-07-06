@@ -68,8 +68,8 @@ def test_log_likelihood_pairwise():
     data1 = ((0,1),)
     data2 = ((0,1), (1,0))
     data3 = ((0,1), (1,2), (2,0))
-    params1 = np.ones(3)
-    params2 = np.exp(np.arange(5))
+    params1 = np.zeros(3)
+    params2 = np.arange(5)
     assert np.allclose(
             log_likelihood_pairwise(data1, params1), -log(2))
     assert np.allclose(
@@ -87,8 +87,8 @@ def test_log_likelihood_pairwise():
 
 def test_log_likelihood_rankings():
     data = ((0,1,2,3),(1,3,0))
-    params1 = e * np.ones(10)
-    params2 = np.linspace(1,2, num=4)
+    params1 = np.zeros(10)
+    params2 = np.log(np.linspace(1,2, num=4))
     assert np.allclose(
             log_likelihood_rankings(data, params1),
             -log(4) - 2 * (log(3) + log(2)))
@@ -99,8 +99,8 @@ def test_log_likelihood_rankings():
 
 def test_log_likelihood_top1():
     data = ((1, (0,2,3)), (3, (1,2)))
-    params1 = e * np.ones(10)
-    params2 = np.linspace(1,2, num=4)
+    params1 = np.zeros(10)
+    params2 = np.log(np.linspace(1,2, num=4))
     assert np.allclose(
             log_likelihood_top1(data, params1), -(log(4) + log(3)))
     assert np.allclose(
@@ -112,7 +112,7 @@ def test_log_likelihood_network():
     digraph.add_weighted_edges_from(((0, 1, 1.0), (0, 2, 2.0)))
     traffic_in = [0, 2, 4]
     traffic_out = [6, 0, 0]
-    params = [1.0, 2.0, 3.0]
+    params = np.log([1.0, 2.0, 3.0])
     assert np.allclose(
             log_likelihood_network(
                     digraph, traffic_in, traffic_out, params, weight=None),
@@ -167,6 +167,14 @@ def test_statdist_two_absorbing_classes():
         x = statdist(gen2)
 
 
+def test_softmax():
+    """``softmax`` should work as expected."""
+    params1 = np.array([0, 0, 0])
+    params2 = np.array([1000, 1000, 2000])
+    assert np.allclose(softmax(params1), [1/3, 1/3, 1/3])
+    assert np.allclose(softmax(params2), [0, 0, 1])
+
+
 def test_normcdf():
     """``normcdf`` should return the value of the normal CDF."""
     for x in 3 * RND.randn(10):
@@ -208,12 +216,12 @@ def test_generate_rankings():
 
 def test_compare_choice():
     """``compare`` should work as expected for choices."""
-    params1 = np.array([1, 1e10, 1e-10, 1e-10, 1e-10])
+    params1 = np.array([0, 100, -100, -100, -100])
     x1 = compare((3, 0, 2, 4), params1)
     assert x1 == 0
     x2 = compare((3, 0, 1, 4), params1)
     assert x2 == 1
-    params2 = np.ones(10)
+    params2 = np.zeros(10)
     for _ in range(10):
         items = RND.choice(10, size=3, replace=False)
         assert compare(items, params2) in items
@@ -221,7 +229,7 @@ def test_compare_choice():
 
 def test_compare_rankings():
     """``compare`` should work as expected for rankings."""
-    params = np.array([1, 1e10, 1e-10, 1e-10, 1e-10])
+    params = np.array([0, 100, -100, -100, -100])
     x1 = compare((3, 0), params, rank=True)
     assert np.array_equal(x1, np.array([0, 3]))
     x2 = compare((3, 0, 1), params, rank=True)

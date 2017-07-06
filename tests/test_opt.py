@@ -15,23 +15,23 @@ PAIRWISE_DATA = [
     (4, 0), (0, 4), (6, 5), (3, 2), (3, 4),
     (3, 4), (5, 2), (7, 3), (7, 6), (6, 5),]
 # With regularization set to 0.5.
-PAIRWISE_ESTIMATE = [0.50789183, 0.5376469, 0.62405681, 0.797485, 0.62110142,
-        0.85111539, 1.60412956, 2.45657308]
+PAIRWISE_ESTIMATE = [-0.51974039, -0.46280878, -0.31376862, -0.06854694,
+        -0.3185146, -0.00346107, 0.63032783, 1.05651257]
 
 # Randomly generated case.
 TOP1_DATA = [
     (7, (6, 3, 1)), (6, (4, 5)),
     (5, (0, 4, 1)), (0, (3,)), (3, (0, 1)),]
 # With regularization set to 0.5.
-TOP1_ESTIMATE = [0.83146317, 0.5476388, 0.93956886, 0.86035011, 0.62979034,
-        1.19532613, 1.26995044, 1.72591215]
+TOP1_ESTIMATE = [-0.12223311, -0.53980682, 0.0, -0.08808004, -0.40003309,
+        0.24075031, 0.30131247, 0.60809028]
 
 RND = np.random.RandomState(42)
 EPS = math.sqrt(np.finfo(float).eps)
 
 # Tolerance values for calls to `numpy.allclose`.
-ATOL = 1e-8
-RTOL = 1e-3
+ATOL = 1e-4
+RTOL = 1e-5
 
 
 def _test_gradient(n_items, fcts):
@@ -82,21 +82,21 @@ def test_top1_hessian():
 def test_opt_pairwise_simple():
     """Simple test where regularization is needed (ML does not exist)."""
     for method in ("BFGS", "Newton-CG"):
-        for params in (None, np.exp(RND.randn(8))):
+        for params in (None, RND.randn(8)):
             est = opt_pairwise(
                     8, PAIRWISE_DATA, penalty=0.5, method=method,
                     initial_params=params)
-            assert np.allclose(est, PAIRWISE_ESTIMATE)
+            assert np.allclose(est, PAIRWISE_ESTIMATE, atol=ATOL, rtol=RTOL)
 
 
 def test_opt_top1_simple():
     """Simple test where regularization is needed (ML does not exist)."""
     for method in ("BFGS", "Newton-CG"):
-        for params in (None, np.exp(RND.randn(8))):
+        for params in (None, RND.randn(8)):
             est = opt_top1(
                     8, TOP1_DATA, penalty=0.5, method=method,
                     initial_params=params)
-            assert np.allclose(est, TOP1_ESTIMATE)
+            assert np.allclose(est, TOP1_ESTIMATE, atol=ATOL, rtol=RTOL)
 
 
 def test_opt_pairwise_extreme():

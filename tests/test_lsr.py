@@ -9,14 +9,14 @@ from tutils import iter_testcases
 
 
 # Tolerance values for calls to `numpy.allclose`.
-ATOL = 1e-8
-RTOL = 1e-3
+ATOL = 1e-4
+RTOL = 1e-5
 
 
 def test_ilsr_tolerance():
     """Tolerance affects the number of iterations."""
-    vals = [np.exp([-0.5, 0.5]), np.exp([-0.3, 0.3]),
-            np.exp([-0.2, 0.2]), np.exp([-0.25, 0.25])]
+    vals = [np.array([-0.5, 0.5]), np.array([-0.3, 0.3]),
+            np.array([-0.2, 0.2]), np.array([-0.25, 0.25])]
     lsr = Mock(side_effect=vals)
     est = _ilsr(
             2, [], alpha=0.0, params=None, max_iter=100, tol=0.15, lsr_fun=lsr)
@@ -26,8 +26,8 @@ def test_ilsr_tolerance():
 
 def test_ilsr_max_iter():
     """Low `max_iter` raises `RuntimeError`."""
-    vals = [np.exp([-0.5, 0.5]), np.exp([-0.3, 0.3]),
-            np.exp([-0.2, 0.2]), np.exp([-0.25, 0.25])]
+    vals = [np.array([-0.5, 0.5]), np.array([-0.3, 0.3]),
+            np.array([-0.2, 0.2]), np.array([-0.25, 0.25])]
     lsr = Mock(side_effect=vals)
     with pytest.raises(RuntimeError):
         _ilsr(2, [], alpha=0.0, params=None, max_iter=2, tol=0.01, lsr_fun=lsr)

@@ -4,16 +4,12 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.misc import logsumexp
 
+from .utils import softmax
+
 
 def _safe_exp(x):
-    x = min(max(x, -500), 500)
+    x = min(x, 500)
     return math.exp(x)
-
-
-def _safe_softmax(xs):
-    xs = np.clip(xs - np.max(xs), -500, 0)
-    exps = np.exp(xs)
-    return exps / exps.sum(axis=0)
 
 
 class PairwiseFcts:
@@ -23,8 +19,6 @@ class PairwiseFcts:
     This class provides methods to compute the negative log-likelihood (the
     "objective"), its gradient and its Hessian, given model parameters and
     pairwise comparison data.
-
-    The parameters are assumed to be in the log domain.
     """
 
     def __init__(self, data, penalty):
@@ -65,8 +59,6 @@ class Top1Fcts:
     top-1 data.
 
     The class also provides an alternative constructor for ranking data.
-
-    The parameters are assumed to be in the log domain.
     """
 
     def __init__(self, data, penalty):
@@ -94,7 +86,7 @@ class Top1Fcts:
         grad = 2 * self._penalty * params
         for winner, losers in self._data:
             idx = np.append(winner, losers)
-            zs = _safe_softmax(params.take(idx))
+            zs = softmax(params.take(idx))
             grad[idx] += zs
             grad[winner] += -1
         return grad
@@ -103,7 +95,7 @@ class Top1Fcts:
         hess = 2 * self._penalty * np.identity(len(params))
         for winner, losers in self._data:
             idx = np.append(winner, losers)
-            zs = _safe_softmax(params.take(idx))
+            zs = softmax(params.take(idx))
             hess[np.ix_(idx, idx)] += -np.outer(zs, zs)
             hess[idx,idx] += zs
         return hess
@@ -111,8 +103,7 @@ class Top1Fcts:
 
 def _opt(n_items, fcts, method, initial_params, max_iter, tol):
     if initial_params is not None:
-        x0 = np.log(initial_params)
-        x0 = x0 - np.mean(x0)
+        x0 = initial_params
     else:
         x0 = np.zeros(n_items)
     if method == "Newton-CG":
@@ -129,9 +120,7 @@ def _opt(n_items, fcts, method, initial_params, max_iter, tol):
                 options={"gtol": tol, "maxiter": max_iter})
     else:
         raise ValueError("method not known")
-    # Parameters are in the log domain - reparametrize the model.
-    params = np.exp(res.x)
-    return params / (params.sum() / n_items)
+    return res.x
 
 
 def opt_pairwise(n_items, data, penalty=1e-6, method="Newton-CG",

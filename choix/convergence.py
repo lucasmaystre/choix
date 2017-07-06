@@ -25,26 +25,25 @@ class NormOfDifferenceTest(ConvergenceTest):
     """Convergence test based on the norm of the difference vector.
 
     This convergence test computes the difference between two successive
-    parameter vectors in log-space, and declares convergence when the norm of
-    this difference vector (normalized by the number of items) is below `tol`.
+    parameter vectors, and declares convergence when the norm of this
+    difference vector (normalized by the number of items) is below `tol`.
     """
 
     def __init__(self, tol=1e-8, order=1):
         self._tol = tol
         self._ord = order
-        self._prev_thetas = None
+        self._prev_params = None
 
     def __call__(self, params, update=True):
-        thetas = np.log(params)
-        thetas -= np.mean(thetas)
-        if self._prev_thetas is None:
+        params = np.asarray(params) - np.mean(params)
+        if self._prev_params is None:
             if update:
-                self._prev_thetas = thetas
+                self._prev_params = params
             return False
-        dist = np.linalg.norm(self._prev_thetas - thetas, ord=self._ord)
+        dist = np.linalg.norm(self._prev_params - params, ord=self._ord)
         if update:
-            self._prev_thetas = thetas
-        return dist <= self._tol * len(thetas)
+            self._prev_params = params
+        return dist <= self._tol * len(params)
 
 
 class ScalarFunctionTest(ConvergenceTest):

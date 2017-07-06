@@ -3,17 +3,17 @@
 import numpy as np
 
 from .convergence import NormOfDifferenceTest
-from .utils import statdist
+from .utils import exp_transform, log_transform, statdist
 
 
 def _init_lsr(n_items, alpha, initial_params):
     """Initialize the LSR Markov chain and the weights."""
     if initial_params is None:
-        ws = np.ones(n_items)
+        weights = np.ones(n_items)
     else:
-        ws = np.asarray(initial_params)
+        weights = exp_transform(initial_params)
     chain = alpha * np.ones((n_items, n_items), dtype=float)
-    return ws, chain
+    return weights, chain
 
 
 def _ilsr(n_items, data, alpha, params, max_iter, tol, lsr_fun):
@@ -63,15 +63,15 @@ def lsr_pairwise(n_items, data, alpha=0.0, initial_params=None):
     params : np.array
         An estimate of model parameters.
     """
-    ws, chain = _init_lsr(n_items, alpha, initial_params)
+    weights, chain = _init_lsr(n_items, alpha, initial_params)
     for winner, loser in data:
-        chain[loser, winner] += 1 / (ws[winner] + ws[loser])
+        chain[loser, winner] += 1 / (weights[winner] + weights[loser])
     chain -= np.diag(chain.sum(axis=1))
-    return statdist(chain)
+    return log_transform(statdist(chain))
 
 
-def ilsr_pairwise(n_items, data, alpha=0.0, initial_params=None,
-        max_iter=100, tol=1e-8):
+def ilsr_pairwise(
+        n_items, data, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -132,7 +132,7 @@ def rank_centrality(n_items, data, alpha=0.0):
     params : np.array
         An estimate of model parameters.
     """
-    ws, chain = _init_lsr(n_items, alpha, None)
+    _, chain = _init_lsr(n_items, alpha, None)
     for winner, loser in data:
         chain[loser, winner] += 1.0
     # Transform the counts into ratios.
@@ -140,7 +140,7 @@ def rank_centrality(n_items, data, alpha=0.0):
     chain[idx] = chain[idx] / (chain + chain.T)[idx]
     # Finalize the Markov chain by adding the self-transition rate.
     chain -= np.diag(chain.sum(axis=1))
-    return statdist(chain)
+    return log_transform(statdist(chain))
 
 
 def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
@@ -174,20 +174,20 @@ def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
     params : np.array
         An estimate of model parameters.
     """
-    ws, chain = _init_lsr(n_items, alpha, initial_params)
+    weights, chain = _init_lsr(n_items, alpha, initial_params)
     for ranking in data:
-        sum_ = ws.take(ranking).sum()
+        sum_ = weights.take(ranking).sum()
         for i, winner in enumerate(ranking[:-1]):
             val = 1.0 / sum_
             for loser in ranking[i+1:]:
                 chain[loser, winner] += val
-            sum_ -= ws[winner]
+            sum_ -= weights[winner]
     chain -= np.diag(chain.sum(axis=1))
-    return statdist(chain)
+    return log_transform(statdist(chain))
 
 
-def ilsr_rankings(n_items, data, alpha=0.0, initial_params=None,
-        max_iter=100, tol=1e-8):
+def ilsr_rankings(
+        n_items, data, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -254,17 +254,17 @@ def lsr_top1(n_items, data, alpha=0.0, initial_params=None):
     params : np.array
         An estimate of model parameters.
     """
-    ws, chain = _init_lsr(n_items, alpha, initial_params)
+    weights, chain = _init_lsr(n_items, alpha, initial_params)
     for winner, losers in data:
-        val = 1 / (ws.take(losers).sum() + ws[winner])
+        val = 1 / (weights.take(losers).sum() + weights[winner])
         for loser in losers:
             chain[loser, winner] += val
     chain -= np.diag(chain.sum(axis=1))
-    return statdist(chain)
+    return log_transform(statdist(chain))
 
 
-def ilsr_top1(n_items, data, alpha=0.0, initial_params=None,
-        max_iter=100, tol=1e-8):
+def ilsr_top1(
+        n_items, data, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model

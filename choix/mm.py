@@ -4,6 +4,7 @@ import itertools
 import numpy as np
 
 from .convergence import NormOfDifferenceTest
+from .utils import log_transform, exp_transform
 
 
 def _mm(n_items, data, initial_params, alpha, max_iter, tol, mm_fun):
@@ -16,14 +17,13 @@ def _mm(n_items, data, initial_params, alpha, max_iter, tol, mm_fun):
         If the algorithm does not converge after `max_iter` iterations.
     """
     if initial_params is None:
-        params = np.ones(n_items)
+        params = np.zeros(n_items)
     else:
         params = initial_params
     converged = NormOfDifferenceTest(tol=tol, order=1)
     for _ in range(max_iter):
         nums, denoms = mm_fun(n_items, data, params)
-        params = (nums + alpha) / (denoms + alpha)
-        params = (n_items / params.sum()) * params
+        params = log_transform((nums + alpha) / (denoms + alpha))
         if converged(params):
             return params
     raise RuntimeError("Did not converge after {} iterations".format(max_iter))
@@ -31,17 +31,19 @@ def _mm(n_items, data, initial_params, alpha, max_iter, tol, mm_fun):
 
 def _mm_pairwise(n_items, data, params):
     """Inner loop of MM algorithm for pairwise data."""
+    weights = exp_transform(params)
     wins = np.zeros(n_items, dtype=float)
     denoms = np.zeros(n_items, dtype=float)
     for winner, loser in data:
         wins[winner] += 1.0
-        val = 1.0 / (params[winner] + params[loser])
+        val = 1.0 / (weights[winner] + weights[loser])
         denoms[winner] += val
         denoms[loser] += val
     return wins, denoms
 
 
-def mm_pairwise(n_items, data, initial_params=None, alpha=0.0,
+def mm_pairwise(
+        n_items, data, initial_params=None, alpha=0.0,
         max_iter=10000, tol=1e-8):
     """Compute the ML estimate of model parameters using the MM algorithm.
 
@@ -80,16 +82,17 @@ def mm_pairwise(n_items, data, initial_params=None, alpha=0.0,
 
 def _mm_rankings(n_items, data, params):
     """Inner loop of MM algorithm for ranking data."""
+    weights = exp_transform(params)
     wins = np.zeros(n_items, dtype=float)
     denoms = np.zeros(n_items, dtype=float)
     for ranking in data:
-        sum_ = params.take(ranking).sum()
+        sum_ = weights.take(ranking).sum()
         for i, winner in enumerate(ranking[:-1]):
             wins[winner] += 1
             val = 1.0 / sum_
             for item in ranking[i:]:
                 denoms[item] += val
-            sum_ -= params[winner]
+            sum_ -= weights[winner]
     return wins, denoms
 
 
@@ -132,17 +135,19 @@ def mm_rankings(n_items, data, initial_params=None, alpha=0.0,
 
 def _mm_top1(n_items, data, params):
     """Inner loop of MM algorithm for top1 data."""
+    weights = exp_transform(params)
     wins = np.zeros(n_items, dtype=float)
     denoms = np.zeros(n_items, dtype=float)
     for winner, losers in data:
         wins[winner] += 1
-        val = 1 / (params.take(losers).sum() + params[winner])
+        val = 1 / (weights.take(losers).sum() + weights[winner])
         for item in itertools.chain([winner], losers):
             denoms[item] += val
     return wins, denoms
 
 
-def mm_top1(n_items, data, initial_params=None, alpha=0.0,
+def mm_top1(
+        n_items, data, initial_params=None, alpha=0.0,
         max_iter=10000, tol=1e-8):
     """Compute the ML estimate of model parameters using the MM algorithm.
 
@@ -180,9 +185,10 @@ def mm_top1(n_items, data, initial_params=None, alpha=0.0,
 
 def _choicerank(n_items, data, params):
     """Inner loop of ChoiceRank algorithm."""
+    weights = exp_transform(params)
     adj, adj_t, traffic_in, traffic_out = data
     # First phase of message passing.
-    zs = adj.dot(params)
+    zs = adj.dot(weights)
     # Second phase of message passing.
     denoms = adj_t.dot(traffic_out / zs)
     return traffic_in, denoms

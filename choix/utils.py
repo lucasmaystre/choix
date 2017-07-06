@@ -5,11 +5,31 @@ import scipy.linalg as spl
 import warnings
 
 from scipy.linalg import solve_triangular
+from scipy.misc import logsumexp
 from scipy.stats import rankdata, kendalltau
 
 
 SQRT2 = math.sqrt(2.0)
 SQRT2PI = math.sqrt(2.0 * math.pi)
+
+
+def log_transform(weights):
+    """Transform weights into centered log-scale parameters."""
+    params = np.log(weights)
+    return params - params.mean()
+
+
+def exp_transform(params):
+    """Transform parameters into exp-scale weights."""
+    weights = np.exp(np.asarray(params) - np.mean(params))
+    return (len(weights) / weights.sum()) * weights
+
+
+def softmax(xs):
+    """Stable implementation of the softmax function."""
+    ys = xs - np.max(xs)
+    exps = np.exp(ys)
+    return exps / exps.sum(axis=0)
 
 
 def normcdf(x):
@@ -123,8 +143,7 @@ def log_likelihood_pairwise(data, params):
     """Compute the log-likelihood of model parameters."""
     loglik = 0
     for winner, loser in data:
-        loglik += math.log(params[winner])
-        loglik -= math.log(params[winner] + params[loser])
+        loglik -= np.logaddexp(0, -(params[winner] - params[loser]))
     return loglik
 
 
@@ -133,20 +152,18 @@ def log_likelihood_rankings(data, params):
     loglik = 0
     params = np.asarray(params)
     for ranking in data:
-        sum_ = params.take(ranking).sum()
         for i, winner in enumerate(ranking[:-1]):
-            loglik += math.log(params[winner])
-            loglik -= math.log(sum_)
-            sum_ -= params[winner]
+            loglik -= logsumexp(params.take(ranking[i:]) - params[winner])
     return loglik
 
 
 def log_likelihood_top1(data, params):
     """Compute the log-likelihood of model parameters."""
     loglik = 0
+    params = np.asarray(params)
     for winner, losers in data:
-        loglik += math.log(params[winner])
-        loglik -= math.log(params[winner] + params.take(losers).sum())
+        idx = np.append(winner, losers)
+        loglik -= logsumexp(params.take(idx) - params[winner])
     return loglik
 
 
@@ -160,15 +177,15 @@ def log_likelihood_network(
     """
     loglik = 0
     for i in range(len(traffic_in)):
-        loglik += traffic_in[i] * math.log(params[i])
+        loglik += traffic_in[i] * params[i]
         if digraph.out_degree(i) > 0:
-            tot = 0
-            for j in digraph.successors_iter(i):
-                if weight is not None:
-                    tot += digraph[i][j][weight] * params[j]
-                else:
-                    tot += params[j]
-            loglik -= traffic_out[i] * math.log(tot)
+            neighbors = digraph.successors(i)
+            if weight is None:
+                loglik -= traffic_out[i] * logsumexp(params.take(neighbors))
+            else:
+                weights = [digraph[i][j][weight] for j in neighbors]
+                loglik -= traffic_out[i] * logsumexp(
+                        params.take(neighbors), b=weights)
     return loglik
 
 
@@ -217,15 +234,8 @@ def statdist(generator):
 def generate_params(n_items, interval=5.0, in_decreasing_order=False):
     r"""Generate random model parameters.
 
-    This function samples a parameter independently for each item. Each
-    parameter is drawn uniformly on a logarithmic scale, and ``interval``
-    defines the width of the uniform distribution. In other words, letting
-    :math:`\lambda_i` be the i-th parameter and :math:`W` be the interval, we
-    have that
-
-    .. math::
-
-      \lambda_i = \exp(x_i), \text{where } x_i \sim \mathrm{Unif}(0, W).
+    This function samples a parameter independently and uniformly for each
+    item. ``interval`` defines the width of the uniform distribution.
 
     Parameters
     ----------
@@ -241,10 +251,10 @@ def generate_params(n_items, interval=5.0, in_decreasing_order=False):
     params : np.array
        Model parameters.
     """
-    params = np.exp(np.random.uniform(low=0, high=interval, size=n_items))
+    params = np.random.uniform(low=0, high=interval, size=n_items)
     if in_decreasing_order:
         params = np.sort(params)[::-1]
-    return (n_items / params.sum()) * params 
+    return params - params.mean() 
 
 
 def generate_pairwise(params, n_comparisons=10):
@@ -337,8 +347,7 @@ def compare(items, params, rank=False):
         The chosen item, or a ranking over ``items``.
     """
     params = np.asarray(params)
-    probs = params.take(items)
-    probs /= probs.sum()
+    probs = softmax(params.take(items))
     if rank:
         return np.random.choice(items, size=len(items), replace=False, p=probs)
     else:

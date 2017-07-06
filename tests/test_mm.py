@@ -10,8 +10,8 @@ from unittest import mock
 RND = np.random.RandomState(42)
 
 # Tolerance values for calls to `numpy.allclose`.
-ATOL = 1e-8
-RTOL = 1e-3
+ATOL = 1e-4
+RTOL = 1e-5
 
 
 def test_mm_pairwise():
@@ -19,7 +19,7 @@ def test_mm_pairwise():
     for case in iter_testcases('pairwise'):
         n_items = case["n_items"]
         data = case["data"]
-        for params in (None, np.exp(RND.randn(n_items))):
+        for params in (None, RND.randn(n_items)):
             est = mm_pairwise(n_items, data, initial_params=params)
             assert np.allclose(case["ml_est"], est, atol=ATOL, rtol=RTOL)
 
@@ -29,7 +29,7 @@ def test_mm_rankings():
     for case in iter_testcases('rankings'):
         n_items = case["n_items"]
         data = case["data"]
-        for params in (None, np.exp(RND.randn(n_items))):
+        for params in (None, RND.randn(n_items)):
             est = mm_rankings(n_items, data, initial_params=params)
             assert np.allclose(case["ml_est"], est, atol=ATOL, rtol=RTOL)
 
@@ -39,7 +39,7 @@ def test_mm_top1():
     for case in iter_testcases('top1'):
         n_items = case["n_items"]
         data = case["data"]
-        for params in (None, np.exp(RND.randn(n_items))):
+        for params in (None, RND.randn(n_items)):
             est = mm_top1(n_items, data, initial_params=params)
             assert np.allclose(case["ml_est"], est, atol=ATOL, rtol=RTOL)
 
@@ -70,8 +70,8 @@ def test_choicerank_simple():
     digraph = nx.DiGraph(data=[(0, 1), (1, 2), (2, 0)])
     traffic_in = [10, 10, 10]
     traffic_out = [10, 10, 10]
-    truth = [1.0, 1.0, 1.0]
-    for params in (None, np.exp(RND.randn(3))):
+    truth = [0.0, 0.0, 0.0]
+    for params in (None, RND.randn(3)):
         est = choicerank(
                 digraph, traffic_in, traffic_out, initial_params=params)
         assert np.allclose(truth, est, atol=ATOL, rtol=RTOL)
@@ -83,8 +83,8 @@ def test_choicerank_weighted():
     digraph.add_weighted_edges_from(((0, 1, 1.0), (0, 2, 2.0)))
     traffic_in = [0, 10, 20]
     traffic_out = [30, 0, 0]
-    truth = [1.0, 1.0, 1.0]
-    for params in (None, np.exp(RND.randn(3))):
+    truth = [0.0, 0.0, 0.0]
+    for params in (None, RND.randn(3)):
         est = choicerank(
                 digraph, traffic_in, traffic_out, initial_params=params,
                 weight='weight')
@@ -101,12 +101,12 @@ def test_choicerank_complex():
     digraph = nx.DiGraph(data=edges)
     traffic_in = [61, 175, 80, 171, 52, 304, 101, 56]
     traffic_out = [113, 121, 129, 114, 134, 132, 133, 124]
-    map_est_1 = [1.01437917, 1.21445619, 0.43487404, 0.91882454, 0.44554917,
-            1.22454351, 0.86426426, 1.88310912]
-    map_est_10 = [0.95598796, 1.12900775, 0.54317251, 1.11554778, 0.5494514,
-            1.10911267, 0.95458486, 1.64313506]
+    map_est_1 = [0.117729, 0.29774862, -0.72924662, 0.01879213, -0.70499544,
+            0.30602036, -0.04242447, 0.73637643]
+    map_est_10 = [0.01371515, 0.18006426, -0.5516032, 0.16807068, -0.54010984,
+            0.16228541, 0.01224638, 0.55533115]
     for alpha, truth in ((1.0, map_est_1), (10.0, map_est_10)):
-        for params in (None, np.exp(RND.randn(n_items))):
+        for params in (None, RND.randn(n_items)):
             est = choicerank(
                     digraph, traffic_in, traffic_out, initial_params=params,
                     alpha=alpha)
