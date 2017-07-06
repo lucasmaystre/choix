@@ -22,7 +22,7 @@ def _ilsr(n_items, data, alpha, params, max_iter, tol, lsr_fun):
     Raises
     ------
     RuntimeError
-        If the algorithm does not converge after `max_iter` iterations.
+        If the algorithm does not converge after ``max_iter`` iterations.
     """
     converged = NormOfDifferenceTest(tol, order=1)
     for _ in range(max_iter):
@@ -60,7 +60,7 @@ def lsr_pairwise(n_items, data, alpha=0.0, initial_params=None):
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         An estimate of model parameters.
     """
     weights, chain = _init_lsr(n_items, alpha, initial_params)
@@ -100,7 +100,7 @@ def ilsr_pairwise(
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The ML estimate of model parameters.
     """
     return _ilsr(
@@ -129,7 +129,7 @@ def rank_centrality(n_items, data, alpha=0.0):
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         An estimate of model parameters.
     """
     _, chain = _init_lsr(n_items, alpha, None)
@@ -171,7 +171,7 @@ def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         An estimate of model parameters.
     """
     weights, chain = _init_lsr(n_items, alpha, initial_params)
@@ -216,7 +216,7 @@ def ilsr_rankings(
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The ML estimate of model parameters.
     """
     return _ilsr(
@@ -251,7 +251,7 @@ def lsr_top1(n_items, data, alpha=0.0, initial_params=None):
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         An estimate of model parameters.
     """
     weights, chain = _init_lsr(n_items, alpha, initial_params)
@@ -293,7 +293,7 @@ def ilsr_top1(
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The ML estimate of model parameters.
     """
     return _ilsr(n_items, data, alpha, initial_params, max_iter, tol, lsr_top1)

@@ -203,7 +203,7 @@ def statdist(generator):
 
     Returns
     -------
-    dist : np.array
+    dist : numpy.ndarray
         The unnormalized stationary distribution of the Markov chain.
 
     Raises
@@ -252,7 +252,7 @@ def generate_params(n_items, interval=5.0, ordered=False):
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
        Model parameters.
     """
     params = np.random.uniform(low=0, high=interval, size=n_items)
@@ -313,7 +313,7 @@ def generate_rankings(params, n_rankings, size=3):
 
     Returns
     -------
-    data : list of np.array
+    data : list of numpy.ndarray
         A list of (partial) rankings generated according to a Plackett--Luce
         model with the specified model parameters.
     """
@@ -373,7 +373,7 @@ def probabilities(items, params):
 
     Returns
     -------
-    probs : np.array
+    probs : numpy.ndarray
         A probability distribution over ``items``.
     """
     params = np.asarray(params)

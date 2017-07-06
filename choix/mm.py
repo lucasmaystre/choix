@@ -73,7 +73,7 @@ def mm_pairwise(
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The ML estimate of model parameters.
     """
     return _mm(
@@ -126,7 +126,7 @@ def mm_rankings(n_items, data, initial_params=None, alpha=0.0,
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The ML estimate of model parameters.
     """
     return _mm(n_items, data, initial_params, alpha, max_iter, tol,
@@ -177,7 +177,7 @@ def mm_top1(
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The ML estimate of model parameters.
     """
     return _mm(n_items, data, initial_params, alpha, max_iter, tol, _mm_top1)
@@ -229,7 +229,7 @@ def choicerank(
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The MAP estimate of model parameters.
 
     Raises

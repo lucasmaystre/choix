@@ -150,7 +150,7 @@ def opt_pairwise(n_items, data, penalty=1e-6, method="Newton-CG",
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The (penalized) ML estimate of model parameters.
 
     Raises
@@ -189,7 +189,7 @@ def opt_rankings(n_items, data, penalty=1e-6, method="Newton-CG",
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The (penalized) ML estimate of model parameters.
 
     Raises
@@ -228,7 +228,7 @@ def opt_top1(n_items, data, penalty=1e-6, method="Newton-CG",
 
     Returns
     -------
-    params : np.array
+    params : numpy.ndarray
         The (penalized) ML estimate of model parameters.
 
     Raises

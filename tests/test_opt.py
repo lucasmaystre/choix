@@ -2,8 +2,7 @@ import math
 import numpy as np
 import pytest
 
-from choix.opt import (
-        PairwiseFcts, Top1Fcts, opt_pairwise, opt_rankings, opt_top1)
+from choix.opt import *
 from scipy.optimize import check_grad, approx_fprime
 from tutils import iter_testcases
 
