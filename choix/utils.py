@@ -67,6 +67,9 @@ def footrule_dist(params1, params2=None):
 
       \sum_{i=1}^N | \sigma_i - \tau_i |
 
+    By convention, items with the lowest parameters are ranked first (i.e.,
+    sorted using the natural order).
+
     If the argument ``params2`` is ``None``, the second model is assumed to
     rank the items by their index: item ``0`` has rank 1, item ``1`` has rank
     2, etc.
@@ -84,12 +87,11 @@ def footrule_dist(params1, params2=None):
         Spearman's footrule distance.
     """
     assert params2 is None or len(params1) == len(params2)
-    # We use `-params` because the highest values should be ranked first.
-    ranks1 = rankdata(-params1, method="average")
+    ranks1 = rankdata(params1, method="average")
     if params2 is None:
         ranks2 = np.arange(1, len(params1) + 1, dtype=float)
     else:
-        ranks2 = rankdata(-params2, method="average")
+        ranks2 = rankdata(params2, method="average")
     return np.sum(np.abs(ranks1 - ranks2))
 
 
@@ -106,6 +108,9 @@ def kendalltau_dist(params1, params2=None):
 
       \sum_{i=1}^N \sum_{j=1}^N
         \mathbf{1} \{ \sigma_i > \sigma_j \wedge \tau_i < \tau_j \}
+
+    By convention, items with the lowest parameters are ranked first (i.e.,
+    sorted using the natural order).
 
     If the argument ``params2`` is ``None``, the second model is assumed to
     rank the items by their index: item ``0`` has rank 1, item ``1`` has rank
@@ -127,12 +132,11 @@ def kendalltau_dist(params1, params2=None):
         Kendall tau distance.
     """
     assert params2 is None or len(params1) == len(params2)
-    # We use `-params` because the highest values should be ranked first.
-    ranks1 = rankdata(-params1, method="ordinal")
+    ranks1 = rankdata(params1, method="ordinal")
     if params2 is None:
         ranks2 = np.arange(1, len(params1) + 1, dtype=float)
     else:
-        ranks2 = rankdata(-params2, method="ordinal")
+        ranks2 = rankdata(params2, method="ordinal")
     tau, _ = kendalltau(ranks1, ranks2)
     n_items = len(params1)
     n_pairs = n_items * (n_items - 1) / 2
@@ -231,7 +235,7 @@ def statdist(generator):
     return (n / res.sum()) * res
 
 
-def generate_params(n_items, interval=5.0, in_decreasing_order=False):
+def generate_params(n_items, interval=5.0, ordered=False):
     r"""Generate random model parameters.
 
     This function samples a parameter independently and uniformly for each
@@ -243,8 +247,8 @@ def generate_params(n_items, interval=5.0, in_decreasing_order=False):
         Number of distinct items.
     interval : float
         Sampling interval.
-    in_decreasing_order : bool, optional
-        If true, the parameters are ordered from largest to smallest.
+    ordered : bool, optional
+        If true, the parameters are ordered from lowest to highest.
 
     Returns
     -------
@@ -252,8 +256,8 @@ def generate_params(n_items, interval=5.0, in_decreasing_order=False):
        Model parameters.
     """
     params = np.random.uniform(low=0, high=interval, size=n_items)
-    if in_decreasing_order:
-        params = np.sort(params)[::-1]
+    if ordered:
+        params.sort()
     return params - params.mean() 
 
 

@@ -29,9 +29,9 @@ def test_footrule_dist_simple_cases():
 
 def test_footrule_dist_default():
     params1 = np.arange(0, 10)
-    assert footrule_dist(params1) == 10**2 / 2
+    assert footrule_dist(params1) == 0
     params2 = np.arange(0, -10, -1)
-    assert footrule_dist(params2) == 0
+    assert footrule_dist(params2) == 10**2 / 2
     params3 = np.ones(10)
     assert footrule_dist(params3) == 25.0
 
@@ -49,16 +49,17 @@ def test_kendalltau_dist_simple_cases():
     params3 = np.array([-1.0, +1.2, +0.0])
     for params in (params1, params2, params3):
         assert kendalltau_dist(params, params) == 0.0
-    assert kendalltau_dist(params1, params2) == 1.0
+    # Tie broken in a "fortunate" way.
+    assert kendalltau_dist(params1, params2) == 0.0
     assert kendalltau_dist(params1, params3) == 3.0
-    assert kendalltau_dist(params2, params3) == 2.0
+    assert kendalltau_dist(params2, params3) == 3.0
 
 
 def test_kendalltau_dist_default():
     params1 = np.arange(0, 10)
-    assert kendalltau_dist(params1) == (10 * 9) / 2
+    assert kendalltau_dist(params1) == 0
     params2 = np.arange(0, -10, -1)
-    assert kendalltau_dist(params2) == 0
+    assert kendalltau_dist(params2) == (10 * 9) / 2
     # This is a deceptive case, the ties just happen to be resolved correctly.
     params3 = np.ones(10)
     assert kendalltau_dist(params3) == 0
@@ -191,8 +192,8 @@ def test_generate_params():
     """``generate_params`` should work as expected."""
     params1 = generate_params(10)
     assert len(params1) == 10
-    params2 = generate_params(10, in_decreasing_order=True)
-    assert params2.tolist() == sorted(params2, reverse=True)
+    params2 = generate_params(10, ordered=True)
+    assert params2.tolist() == sorted(params2)
 
 
 def test_generate_pairwise():
