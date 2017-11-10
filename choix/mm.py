@@ -48,7 +48,7 @@ def mm_pairwise(
     """Compute the ML estimate of model parameters using the MM algorithm.
 
     This function computes the maximum-likelihood (ML) estimate of model
-    parameters given pairwise comparison data (see :ref:`data-pairwise`), using
+    parameters given pairwise-comparison data (see :ref:`data-pairwise`), using
     the minorization-maximization (MM) algorithm [Hun04]_, [CD12]_.
 
     If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
@@ -60,7 +60,7 @@ def mm_pairwise(
     n_items : int
         Number of distinct items.
     data : list of lists
-        Pairwise comparison data.
+        Pairwise-comparison data.
     initial_params : array_like, optional
         Parameters used to initialize the iterative procedure.
     alpha : float, optional

@@ -37,7 +37,7 @@ To install the latest release directly from PyPI, simply type
 
 To get started, you might want to explore one of these notebooks:
 
-- [Introduction using pairwise comparison data](notebooks/intro-pairwise.ipynb)
+- [Introduction using pairwise-comparison data](notebooks/intro-pairwise.ipynb)
 - [Case study: analyzing the GIFGIF dataset](notebooks/gifgif-dataset.ipynb)
 - [Using ChoiceRank to understand traffic on a network](notebooks/choicerank-tutorial.ipynb)
 - [Approximate Bayesian inference using EP](notebooks/ep-example.ipynb)

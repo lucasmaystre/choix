@@ -14,11 +14,11 @@ def _safe_exp(x):
 
 class PairwiseFcts:
 
-    """Optimization-related methods for pairwise comparison data.
+    """Optimization-related methods for pairwise-comparison data.
     
     This class provides methods to compute the negative log-likelihood (the
     "objective"), its gradient and its Hessian, given model parameters and
-    pairwise comparison data.
+    pairwise-comparison data.
     """
 
     def __init__(self, data, penalty):
@@ -128,7 +128,7 @@ def opt_pairwise(n_items, data, penalty=1e-6, method="Newton-CG",
     """Compute the ML estimate of model parameters using ``scipy.optimize``.
 
     This function computes the (penalized) maximum-likelihood estimate of model
-    parameters given pairwise comparison data (see :ref:`data-pairwise`), using
+    parameters given pairwise-comparison data (see :ref:`data-pairwise`), using
     optimizers provided by the ``scipy.optimize`` module.
 
     Parameters
@@ -136,7 +136,7 @@ def opt_pairwise(n_items, data, penalty=1e-6, method="Newton-CG",
     n_items : int
         Number of distinct items.
     data : list of lists
-        Pairwise comparison data.
+        Pairwise-comparison data.
     penalty : float, optional
         Regularization strength.
     method : str, optional

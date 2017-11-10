@@ -34,7 +34,7 @@ def ep_pairwise(n_items, data, alpha, model="logit", max_iter=100,
     """Compute a distribution of model parameters using the EP algorithm.
 
     This function computes an approximate Bayesian posterior probability
-    distribution over model parameters, given pairwise comparison data (see
+    distribution over model parameters, given pairwise-comparison data (see
     :ref:`data-pairwise`). It uses the expectation propagation algorithm, as
     presented, e.g., in [CG05]_.
 
@@ -43,7 +43,7 @@ def ep_pairwise(n_items, data, alpha, model="logit", max_iter=100,
     Gaussian distribution, described by a mean vector and a covariance matrix.
 
     Two different observation models are available. ``logit`` (default) assumes
-    that pairwise comparison outcomes follow from a Bradley-Terry model.
+    that pairwise-comparison outcomes follow from a Bradley-Terry model.
     ``probit`` assumes that the outcomes follow from Thurstone's model.
 
     Parameters
@@ -51,7 +51,7 @@ def ep_pairwise(n_items, data, alpha, model="logit", max_iter=100,
     n_items : int
         Number of distinct items.
     data : list of lists
-        Pairwise comparison data.
+        Pairwise-comparison data.
     alpha : float
         Inverse variance of the (isotropic) prior.
     model : str, optional

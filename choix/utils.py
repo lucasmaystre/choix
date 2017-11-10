@@ -279,7 +279,7 @@ def generate_pairwise(params, n_comparisons=10):
     Returns
     -------
     data : list of (int, int)
-       Pairwise comparison samples (see :ref:`data-pairwise`).
+       Pairwise-comparison samples (see :ref:`data-pairwise`).
     """
     n = len(params)
     items = tuple(range(n))

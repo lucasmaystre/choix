@@ -37,7 +37,7 @@ def lsr_pairwise(n_items, data, alpha=0.0, initial_params=None):
     """Compute the LSR estimate of model parameters.
 
     This function implements the Luce Spectral Ranking inference algorithm
-    [MG15]_ for pairwise comparison data (see :ref:`data-pairwise`).
+    [MG15]_ for pairwise-comparison data (see :ref:`data-pairwise`).
 
     The argument ``initial_params`` can be used to iteratively refine an
     existing parameter estimate (see the implementation of
@@ -53,7 +53,7 @@ def lsr_pairwise(n_items, data, alpha=0.0, initial_params=None):
     n_items : int
         Number of distinct items.
     data : list of lists
-        Pairwise comparison data.
+        Pairwise-comparison data.
     alpha : float, optional
         Regularization parameter.
     initial_params : array_like, optional
@@ -76,7 +76,7 @@ def ilsr_pairwise(
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
-    parameters given pairwise comparison data (see :ref:`data-pairwise`), using
+    parameters given pairwise-comparison data (see :ref:`data-pairwise`), using
     the iterative Luce Spectral Ranking algorithm [MG15]_.
 
     The transition rates of the LSR Markov chain are initialized with
@@ -88,7 +88,7 @@ def ilsr_pairwise(
     n_items : int
         Number of distinct items.
     data : list of lists
-        Pairwise comparison data.
+        Pairwise-comparison data.
     alpha : float, optional
         Regularization parameter.
     initial_params : array_like, optional
@@ -213,7 +213,7 @@ def rank_centrality(n_items, data, alpha=0.0):
     n_items : int
         Number of distinct items.
     data : list of lists
-        Pairwise comparison data.
+        Pairwise-comparison data.
     alpha : float, optional
         Regularization parameter.
 
