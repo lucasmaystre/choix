@@ -1,5 +1,6 @@
 """(Iterative) Luce Spectral Ranking and related inference algorithms."""
 
+import functools
 import numpy as np
 
 from .convergence import NormOfDifferenceTest
@@ -16,7 +17,7 @@ def _init_lsr(n_items, alpha, initial_params):
     return weights, chain
 
 
-def _ilsr(n_items, data, alpha, params, max_iter, tol, lsr_fun):
+def _ilsr(fun, params, max_iter, tol):
     """Iteratively refine LSR estimates until convergence.
 
     Raises
@@ -26,7 +27,7 @@ def _ilsr(n_items, data, alpha, params, max_iter, tol, lsr_fun):
     """
     converged = NormOfDifferenceTest(tol, order=1)
     for _ in range(max_iter):
-        params = lsr_fun(n_items, data, alpha=alpha, initial_params=params)
+        params = fun(initial_params=params)
         if converged(params):
             return params
     raise RuntimeError("Did not converge after {} iterations".format(max_iter))
@@ -103,8 +104,97 @@ def ilsr_pairwise(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    return _ilsr(
-            n_items, data, alpha, initial_params, max_iter, tol, lsr_pairwise)
+    fun = functools.partial(
+            lsr_pairwise, n_items=n_items, data=data, alpha=alpha)
+    return _ilsr(fun, initial_params, max_iter, tol)
+
+
+def lsr_pairwise_dense(comp_mat, alpha=0.0, initial_params=None):
+    """Compute the LSR estimate of model parameters given dense data.
+
+    This function implements the Luce Spectral Ranking inference algorithm
+    [MG15]_ for dense pairwise-comparison data.
+
+    The data is described by a pairwise-comparison matrix ``comp_mat`` such
+    that ``comp_mat[i,j]`` contains the number of times that item ``i`` wins
+    against item ``j``.
+
+    In comparison to :func:`~choix.lsr_pairwise`, this function is particularly
+    efficient for dense pairwise-comparison datasets (i.e., containing many
+    comparisons for a large fraction of item pairs).
+
+    The argument ``initial_params`` can be used to iteratively refine an
+    existing parameter estimate (see the implementation of
+    :func:`~choix.ilsr_pairwise` for an idea on how this works). If it is set
+    to `None` (the default), the all-ones vector is used.
+
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
+
+    Parameters
+    ----------
+    comp_mat : np.array
+        2D square matrix describing the pairwise-comparison outcomes.
+    alpha : float, optional
+        Regularization parameter.
+    initial_params : array_like, optional
+        Parameters used to build the transition rates of the LSR Markov chain.
+
+    Returns
+    -------
+    params : np.array
+        An estimate of model parameters.
+    """
+    n_items = comp_mat.shape[0]
+    ws, chain = _init_lsr(n_items, alpha, initial_params)
+    denom = np.tile(ws, (n_items, 1))
+    chain += comp_mat.T / (denom + denom.T)
+    chain -= np.diag(chain.sum(axis=1))
+    return log_transform(statdist(chain))
+
+
+def ilsr_pairwise_dense(
+        comp_mat, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
+    """Compute the ML estimate of model parameters given dense data.
+
+    This function computes the maximum-likelihood (ML) estimate of model
+    parameters given dense pairwise-comparison data.
+
+    The data is described by a pairwise-comparison matrix ``comp_mat`` such
+    that ``comp_mat[i,j]`` contains the number of times that item ``i`` wins
+    against item ``j``.
+
+    In comparison to :func:`~choix.ilsr_pairwise`, this function is
+    particularly efficient for dense pairwise-comparison datasets (i.e.,
+    containing many comparisons for a large fraction of item pairs).
+
+    The transition rates of the LSR Markov chain are initialized with
+    ``alpha``. When ``alpha > 0``, this corresponds to a form of regularization
+    (see :ref:`regularization` for details).
+
+    Parameters
+    ----------
+    comp_mat : np.array
+        2D square matrix describing the pairwise-comparison outcomes.
+    alpha : float, optional
+        Regularization parameter.
+    initial_params : array_like, optional
+        Parameters used to initialize the iterative procedure.
+    max_iter : int, optional
+        Maximum number of iterations allowed.
+    tol : float, optional
+        Maximum L1-norm of the difference between successive iterates to
+        declare convergence.
+
+    Returns
+    -------
+    params : numpy.ndarray
+        The ML estimate of model parameters.
+    """
+    fun = functools.partial(
+            lsr_pairwise_dense, comp_mat=comp_mat, alpha=alpha)
+    return _ilsr(fun, initial_params, max_iter, tol)
 
 
 def rank_centrality(n_items, data, alpha=0.0):
@@ -219,8 +309,9 @@ def ilsr_rankings(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    return _ilsr(
-            n_items, data, alpha, initial_params, max_iter, tol, lsr_rankings)
+    fun = functools.partial(
+            lsr_rankings, n_items=n_items, data=data, alpha=alpha)
+    return _ilsr(fun, initial_params, max_iter, tol)
 
 
 def lsr_top1(n_items, data, alpha=0.0, initial_params=None):
@@ -296,4 +387,5 @@ def ilsr_top1(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    return _ilsr(n_items, data, alpha, initial_params, max_iter, tol, lsr_top1)
+    fun = functools.partial(lsr_top1, n_items=n_items, data=data, alpha=alpha)
+    return _ilsr(fun, initial_params, max_iter, tol)

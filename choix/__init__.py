@@ -3,9 +3,11 @@
 
 from .lsr import (
     lsr_pairwise,
+    lsr_pairwise_dense,
     lsr_rankings,
     lsr_top1,
     ilsr_pairwise,
+    ilsr_pairwise_dense,
     ilsr_rankings,
     ilsr_top1,
     rank_centrality,
