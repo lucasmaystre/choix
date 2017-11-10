@@ -46,17 +46,19 @@ def test_mm_top1():
 
 def test_mm_diverges():
     """Should raise an exception if no convergence after ``max_iter``."""
-    data = ((0, 1),)
+    # MM performs poorly on cycle datasets.
+    data = ((0, 1), (1, 2), (2, 3), (3, 0))
+    params = np.array([1.0, 0.1, 0.1, 0.1])
     # Pairwise.
     with pytest.raises(RuntimeError):
-        mm_pairwise(2, data, max_iter=10)
+        mm_pairwise(4, data, initial_params=params, max_iter=10)
     # Ranking.
     with pytest.raises(RuntimeError):
-        mm_rankings(2, data, max_iter=10)
+        mm_rankings(4, data, initial_params=params, max_iter=10)
     # Top-1.
-    data = ((0, (1,)),)
+    data = ((0, (1,)), (1, (2,)), (2, (3,)), (3, (0,)))
     with pytest.raises(RuntimeError):
-        mm_top1(2, data, max_iter=10)
+        mm_top1(4, data, initial_params=params, max_iter=10)
 
 
 def test_choicerank_no_networkx():
