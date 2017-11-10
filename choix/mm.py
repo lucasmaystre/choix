@@ -190,7 +190,8 @@ def _choicerank(n_items, data, params):
     # First phase of message passing.
     zs = adj.dot(weights)
     # Second phase of message passing.
-    denoms = adj_t.dot(traffic_out / zs)
+    with np.errstate(invalid="ignore"):
+        denoms = adj_t.dot(traffic_out / zs)
     return traffic_in, denoms
 
 
