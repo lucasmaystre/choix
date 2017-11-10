@@ -183,7 +183,7 @@ def log_likelihood_network(
     for i in range(len(traffic_in)):
         loglik += traffic_in[i] * params[i]
         if digraph.out_degree(i) > 0:
-            neighbors = digraph.successors(i)
+            neighbors = list(digraph.successors(i))
             if weight is None:
                 loglik -= traffic_out[i] * logsumexp(params.take(neighbors))
             else:
