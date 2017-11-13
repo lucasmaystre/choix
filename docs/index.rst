@@ -26,6 +26,8 @@ data, using a variety of algorithms:
 * Rank Centrality
 * Approximate Bayesian inference with expectation propagation
 
+An easy way to get started is by exploring the notebooks_!
+
 
 Contents
 --------
@@ -46,3 +48,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _notebooks: https://github.com/lucasmaystre/choix/tree/master/notebooks
