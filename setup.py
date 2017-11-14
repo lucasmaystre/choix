@@ -12,7 +12,7 @@ def readme():
 
 setup(
     name='choix',
-    version='0.2.0',
+    version='0.3.0',
     author='Lucas Maystre',
     author_email='lucas@maystre.ch',
     description="Inference algorithms for models based on Luce's choice axiom.",
@@ -20,7 +20,7 @@ setup(
     url='https://github.com/lucasmaystre/choix',
     license='MIT',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Intended Audience :: Science/Research',
