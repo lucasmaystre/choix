@@ -83,7 +83,7 @@ def test_opt_pairwise_simple():
     for method in ("BFGS", "Newton-CG"):
         for params in (None, RND.randn(8)):
             est = opt_pairwise(
-                    8, PAIRWISE_DATA, penalty=0.5, method=method,
+                    8, PAIRWISE_DATA, alpha=0.5, method=method,
                     initial_params=params)
             assert np.allclose(est, PAIRWISE_ESTIMATE, atol=ATOL, rtol=RTOL)
 
@@ -93,7 +93,7 @@ def test_opt_top1_simple():
     for method in ("BFGS", "Newton-CG"):
         for params in (None, RND.randn(8)):
             est = opt_top1(
-                    8, TOP1_DATA, penalty=0.5, method=method,
+                    8, TOP1_DATA, alpha=0.5, method=method,
                     initial_params=params)
             assert np.allclose(est, TOP1_ESTIMATE, atol=ATOL, rtol=RTOL)
 
@@ -102,7 +102,7 @@ def test_opt_pairwise_extreme():
     """MAP estimate takes extreme values (almost divergent)."""
     data = ((0,1), (1, 2))
     for method in ("BFGS", "Newton-CG"):
-        est = opt_pairwise(3, data, penalty=0.00001, method=method)
+        est = opt_pairwise(3, data, alpha=0.00001, method=method)
         assert est[0] > est[1] > est[2]
 
 
@@ -110,7 +110,7 @@ def test_opt_top1_extreme():
     """MAP estimate takes extreme values (almost divergent)."""
     data = ((0, (1,)), (1, (2,)))
     for method in ("BFGS", "Newton-CG"):
-        est = opt_top1(3, data, penalty=0.00001, method=method)
+        est = opt_top1(3, data, alpha=0.00001, method=method)
         assert est[0] > est[1] > est[2]
 
 
@@ -130,7 +130,7 @@ def test_opt_pairwise_json():
         n_items = case["n_items"]
         data = case["data"]
         for method in ("BFGS", "Newton-CG"):
-            est = opt_pairwise(n_items, data, penalty=0.0, method=method)
+            est = opt_pairwise(n_items, data, alpha=0.0, method=method)
             assert np.allclose(case["ml_est"], est, atol=ATOL, rtol=RTOL)
 
 
@@ -140,7 +140,7 @@ def test_opt_rankings_json():
         n_items = case["n_items"]
         data = case["data"]
         for method in ("BFGS", "Newton-CG"):
-            est = opt_rankings(n_items, data, penalty=0.0, method=method)
+            est = opt_rankings(n_items, data, alpha=0.0, method=method)
             assert np.allclose(case["ml_est"], est, atol=ATOL, rtol=RTOL)
 
 
@@ -150,5 +150,5 @@ def test_opt_top1_json():
         n_items = case["n_items"]
         data = case["data"]
         for method in ("BFGS", "Newton-CG"):
-            est = opt_top1(n_items, data, penalty=0.0, method=method)
+            est = opt_top1(n_items, data, alpha=0.0, method=method)
             assert np.allclose(case["ml_est"], est, atol=ATOL, rtol=RTOL)

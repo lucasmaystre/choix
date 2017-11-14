@@ -123,13 +123,17 @@ def _opt(n_items, fcts, method, initial_params, max_iter, tol):
     return res.x
 
 
-def opt_pairwise(n_items, data, penalty=1e-6, method="Newton-CG",
+def opt_pairwise(n_items, data, alpha=1e-6, method="Newton-CG",
         initial_params=None, max_iter=None, tol=1e-5):
     """Compute the ML estimate of model parameters using ``scipy.optimize``.
 
-    This function computes the (penalized) maximum-likelihood estimate of model
-    parameters given pairwise-comparison data (see :ref:`data-pairwise`), using
-    optimizers provided by the ``scipy.optimize`` module.
+    This function computes the maximum-likelihood estimate of model parameters
+    given pairwise-comparison data (see :ref:`data-pairwise`), using optimizers
+    provided by the ``scipy.optimize`` module.
+
+    If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
+    estimate under an isotropic Gaussian prior with variance ``1 / alpha``. See
+    :ref:`regularization` for details.
 
     Parameters
     ----------
@@ -137,7 +141,7 @@ def opt_pairwise(n_items, data, penalty=1e-6, method="Newton-CG",
         Number of distinct items.
     data : list of lists
         Pairwise-comparison data.
-    penalty : float, optional
+    alpha : float, optional
         Regularization strength.
     method : str, optional
         Optimization method. Either "BFGS" or "Newton-CG".
@@ -158,17 +162,21 @@ def opt_pairwise(n_items, data, penalty=1e-6, method="Newton-CG",
     ValueError
         If the method is not "BFGS" or "Newton-CG".
     """
-    fcts = PairwiseFcts(data, penalty)
+    fcts = PairwiseFcts(data, alpha)
     return _opt(n_items, fcts, method, initial_params, max_iter, tol)
 
 
-def opt_rankings(n_items, data, penalty=1e-6, method="Newton-CG",
+def opt_rankings(n_items, data, alpha=1e-6, method="Newton-CG",
         initial_params=None, max_iter=None, tol=1e-5):
     """Compute the ML estimate of model parameters using ``scipy.optimize``.
 
-    This function computes the (penalized) maximum-likelihood estimate of model
-    parameters given ranking data (see :ref:`data-rankings`), using optimizers
-    provided by the ``scipy.optimize`` module.
+    This function computes the maximum-likelihood estimate of model parameters
+    given ranking data (see :ref:`data-rankings`), using optimizers provided by
+    the ``scipy.optimize`` module.
+
+    If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
+    estimate under an isotropic Gaussian prior with variance ``1 / alpha``. See
+    :ref:`regularization` for details.
 
     Parameters
     ----------
@@ -176,7 +184,7 @@ def opt_rankings(n_items, data, penalty=1e-6, method="Newton-CG",
         Number of distinct items.
     data : list of lists
         Ranking data.
-    penalty : float, optional
+    alpha : float, optional
         Regularization strength.
     method : str, optional
         Optimization method. Either "BFGS" or "Newton-CG".
@@ -197,17 +205,21 @@ def opt_rankings(n_items, data, penalty=1e-6, method="Newton-CG",
     ValueError
         If the method is not "BFGS" or "Newton-CG".
     """
-    fcts = Top1Fcts.from_rankings(data, penalty)
+    fcts = Top1Fcts.from_rankings(data, alpha)
     return _opt(n_items, fcts, method, initial_params, max_iter, tol)
 
 
-def opt_top1(n_items, data, penalty=1e-6, method="Newton-CG",
+def opt_top1(n_items, data, alpha=1e-6, method="Newton-CG",
         initial_params=None, max_iter=None, tol=1e-5):
     """Compute the ML estimate of model parameters using ``scipy.optimize``.
 
-    This function computes the (penalized) maximum-likelihood estimate of model
-    parameters given top-1 data (see :ref:`data-top1`), using optimizers
-    provided by the ``scipy.optimize`` module.
+    This function computes the maximum-likelihood estimate of model parameters
+    given top-1 data (see :ref:`data-top1`), using optimizers provided by the
+    ``scipy.optimize`` module.
+
+    If ``alpha > 0``, the function returns the maximum a-posteriori (MAP)
+    estimate under an isotropic Gaussian prior with variance ``1 / alpha``. See
+    :ref:`regularization` for details.
 
     Parameters
     ----------
@@ -215,7 +227,7 @@ def opt_top1(n_items, data, penalty=1e-6, method="Newton-CG",
         Number of distinct items.
     data : list of lists
         Top-1 data.
-    penalty : float, optional
+    alpha : float, optional
         Regularization strength.
     method : str, optional
         Optimization method. Either "BFGS" or "Newton-CG".
@@ -236,5 +248,5 @@ def opt_top1(n_items, data, penalty=1e-6, method="Newton-CG",
     ValueError
         If the method is not "BFGS" or "Newton-CG".
     """
-    fcts = Top1Fcts(data, penalty)
+    fcts = Top1Fcts(data, alpha)
     return _opt(n_items, fcts, method, initial_params, max_iter, tol)
