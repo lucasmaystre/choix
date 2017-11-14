@@ -29,11 +29,11 @@ In Python, we simply represent this event using a list with two integers:
 
    [i, j]
 
-By convention, the first element of the list represents the item which *wins*,
-and the second element the item which *loses*.
+By convention, the first element of the list represents the item which wins,
+and the second element the item which loses.
 
 The statistical model that ``choix`` postulates for pairwise-comparison
-data is usually known as the *Bradley–Terry model*. Given parameters
+data is usually known as the *Bradley–Terry* model. Given parameters
 :math:`\theta_1, \ldots, \theta_n`, and two items :math:`i` and :math:`j`, the
 probability of the outcome :math:`i \succ j` is
 
@@ -47,8 +47,8 @@ probability of the outcome :math:`i \succ j` is
 Top-1 lists
 -----------
 
-Another case arises when the data consist of choices of *one* item over
-*several* other items. We call this type of data *top-1 list*. Compared to
+Another case arises when the data consist of choices of one item out of a set
+containing *several* other items. We call these *top-1 lists*. Compared to
 pairwise comparisons, this type of data is no longer restricted to comparing
 only two items: comparisons can involve sets of alternatives of any size
 between 2 and ``n_items``. We denote the outcome "item :math:`i` is chosen over
@@ -64,15 +64,15 @@ In Python, we represent this event using a list with two elements:
 
    [i, {j, ..., k}]
 
-The first element of the list is an integer that represents the *chosen* item,
+The first element of the list is an integer that represents the "winning" item,
 whereas the second element is a set containing the "losing" items. Note that
 this set does *not* include the winning item.
 
 The statistical model that ``choix`` uses for these data is a straightforward
-extension of the Bradley–Terry model that was presented by R. Duncan Luce
-(1959). Given parameters :math:`\theta_1, \ldots, \theta_n`, item :math:`i` and
-losing alternatives :math:`j, k, \ell, \ldots`, the probability of the
-corresponding outcome is
+extension of the Bradley–Terry model (see, e.g., Luce 1959). Given parameters
+:math:`\theta_1, \ldots, \theta_n`, winning item :math:`i` and losing
+alternatives :math:`j, k, \ell, \ldots`, the probability of the corresponding
+outcome is
 
 .. math::
 
@@ -86,9 +86,9 @@ Rankings
 --------
 
 Instead of observing a single choice, we might have observations that consist
-of a (partial) *ranking* over a set of alternatives. This leads to a third type
-of data. We denote the event "item :math:`i` wins over item :math:`j` ... wins
-over item :math:`k`" as
+of a *ranking* over a set of alternatives. This leads to a third type of data.
+We denote the event "item :math:`i` wins over item :math:`j` ... wins over item
+:math:`k`" as
 
 .. math::
 
@@ -105,7 +105,7 @@ example, the list ``[2, 0, 4]`` corresponds to a ranking where ``2`` is first,
 ``0`` is second, and ``4`` is third.
 
 In this case, the statistical model that ``choix`` uses is usually referred to
-as the *Plackett-Luce* model. Given parameters :math:`\theta_1, \ldots,
+as the *Plackett–Luce* model. Given parameters :math:`\theta_1, \ldots,
 \theta_n` and items :math:`i, j, \ldots, k`, the probability of a given ranking
 is
 
@@ -127,5 +127,8 @@ Choices in a network
 
 The fourth type of data is slightly more involved. It enables the processing of
 choices on networks based on marginal observations at the nodes of the network.
+The easiest way to get started is to follow  `this notebook
+<https://github.com/lucasmaystre/choix/tree/master/notebooks/choicerank-tutorial.ipynb>`__.
+
 We defer to [MG17]_ for a thorough presentation of the observed data and of the
 statistical model.
