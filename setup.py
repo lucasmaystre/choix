@@ -6,7 +6,7 @@ HERE = path.abspath(path.dirname(__file__))
 
 
 def readme():
-    with open(path.join(HERE, 'README.md')) as f:
+    with open(path.join(HERE, 'README.rst')) as f:
         return f.read()
 
 
