@@ -1,13 +1,21 @@
 language: python
-python: "3.5"
+python: '3.5'
 install:
-  - "pip install numpy"
-  - "pip install scipy"
-  - "pip install networkx"
-  - "pip install pytest"
-  - "pip install pytest-cov"
-  - "pip install codecov"
-  - "pip install -e ."
-script: "py.test --cov=choix"
+- pip install numpy
+- pip install scipy
+- pip install networkx
+- pip install pytest
+- pip install pytest-cov
+- pip install codecov
+- pip install -e .
+script: py.test --cov=choix
 after_success:
-  - "codecov"
+- codecov
+deploy:
+  provider: pypi
+  user: lum
+  password:
+    secure: iTrRZX/oDAfNtZuCe1/RS9//wnzpl48KEmaaq9aG1IQPAKbyIJTs/bRVp61af3txq54dsegK9Uql1rz46QF8d4e4H275GfZkqkxN3EoT36vNpPdZvUHYmVHpWOyziL6wwA4ORrI/BF+DOTujxTTPZ87EReUtjwpvybWXTe49rxq8ZgVO1K+VeL+r2+aGytvoOcKeF+txUzDpTxqD1/fYYi3CPA3SO5s2zI93EnPWyPLYSbnRpO6//4yWP8lPoU+oLwz6x7RoHuEoYCgO3hH+PN4FCU3xKJm0/+rUG4KbJ9RUn7Oz6SA7koCb7si4lmIx/odxtYKvBzO5i39XwEnFrLQyfEnFA+85OJwxl/k7/S/wGY+vE021Yv9d3V6V5GCfrCtUh6OKdZGRDImX6JJQlzTeaGJaHRNGnV3uRmj3gH8lf8xL9MHnisILFVaQt9bWWht/75zWcu7FpfS4DCaDfzGTHsi74Ajg3XHLcvtEYUuePcC5NoMGg0g1MIX2/C+u3Xy3ljE8WITynvAfGVfrMCBW3yk+j1MwPGDhd8Vsjt2h7dHSaUBdMWgZDPFbHejmFlSHFIfVJi/eTFdIZzgj2OGA2y6TwITkF/kBUpRkUcEooTvIgBG9kps4eJdpndfUxBIY5IcpJOZadZNTYpwK35XGFQLaOh0bDV4c3jqChYI=
+  on:
+    tags: true
+    branch: master
