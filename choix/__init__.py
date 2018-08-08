@@ -23,6 +23,7 @@ from .mm import (
 from .utils import (
     footrule_dist,
     kendalltau_dist,
+    rmse,
     log_likelihood_pairwise,
     log_likelihood_rankings,
     log_likelihood_top1,

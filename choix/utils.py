@@ -143,6 +143,28 @@ def kendalltau_dist(params1, params2=None):
     return round((n_pairs - n_pairs * tau) / 2)
 
 
+def rmse(params1, params2):
+    r"""Compute the root-mean-squared error between two models.
+
+    Parameters
+    ----------
+    params1 : array_like
+        Parameters of the first model.
+    params2 : array_like
+        Parameters of the second model.
+
+    Returns
+    -------
+    error : float
+        Root-mean-squared error.
+    """
+    assert len(params1) == len(params2)
+    params1 = np.asarray(params1) - np.mean(params1)
+    params2 = np.asarray(params2) - np.mean(params2)
+    sqrt_n = math.sqrt(len(params1))
+    return np.linalg.norm(params1 - params2, ord=2) / sqrt_n
+
+
 def log_likelihood_pairwise(data, params):
     """Compute the log-likelihood of model parameters."""
     loglik = 0
