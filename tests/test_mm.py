@@ -69,7 +69,7 @@ def test_choicerank_no_networkx():
 
 def test_choicerank_simple():
     """ChoiceRank should return no-nonsense results on a toy dataset."""
-    digraph = nx.DiGraph(data=[(0, 1), (1, 2), (2, 0)])
+    digraph = nx.DiGraph(incoming_graph_data=[(0, 1), (1, 2), (2, 0)])
     traffic_in = [10, 10, 10]
     traffic_out = [10, 10, 10]
     truth = [0.0, 0.0, 0.0]
@@ -100,7 +100,7 @@ def test_choicerank_complex():
     n_items = 8
     edges = [(0, 5), (1, 3), (1, 4), (2, 1), (2, 4), (2, 6), (2, 7), (3, 2),
             (3, 6), (4, 0), (4, 1), (5, 2), (5, 3), (6, 1), (6, 5), (7, 5)]
-    digraph = nx.DiGraph(data=edges)
+    digraph = nx.DiGraph(incoming_graph_data=edges)
     traffic_in = [61, 175, 80, 171, 52, 304, 101, 56]
     traffic_out = [113, 121, 129, 114, 134, 132, 133, 124]
     map_est_1 = [0.117729, 0.29774862, -0.72924662, 0.01879213, -0.70499544,
