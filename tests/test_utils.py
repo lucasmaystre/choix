@@ -66,6 +66,21 @@ def test_kendalltau_dist_default():
     assert kendalltau_dist(params3) == 0
 
 
+def test_rmse_error():
+    params1 = np.array([+1.0, -1.2, +0.0, -0.3])
+    params2 = params1 - 10.0
+    assert np.allclose(rmse(params1, params2), 0)
+    params3 = params1 + np.array([+0.1, -0.1, -0.1, +0.1])
+    assert np.allclose(rmse(params1, params3), 0.1)
+
+
+def test_rmse_simple_cases():
+    params1 = np.arange(3, dtype=float)
+    params2 = np.arange(4, dtype=float)
+    with pytest.raises(AssertionError):
+        rmse(params1, params2)
+
+
 def test_log_likelihood_pairwise():
     data1 = ((0,1),)
     data2 = ((0,1), (1,0))
