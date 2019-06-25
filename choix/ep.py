@@ -4,7 +4,7 @@ import numpy.random as nprand
 
 from numpy.linalg import norm
 from math import exp, log, pi, sqrt  # Faster than numpy equivalents.
-from scipy.misc import logsumexp
+from scipy.special import logsumexp
 
 from .utils import normal_cdf, inv_posdef, SQRT2, SQRT2PI
 

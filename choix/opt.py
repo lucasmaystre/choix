@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 from scipy.optimize import minimize
-from scipy.misc import logsumexp
+from scipy.special import logsumexp
 
 from .utils import softmax
 
