@@ -5,7 +5,7 @@ import scipy.linalg as spl
 import warnings
 
 from scipy.linalg import solve_triangular
-from scipy.misc import logsumexp
+from scipy.special import logsumexp
 from scipy.stats import rankdata, kendalltau
 
 
