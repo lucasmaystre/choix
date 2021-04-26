@@ -38,13 +38,13 @@ To install the latest release directly from PyPI, simply type::
 To get started, you might want to explore one of these notebooks:
 
 - `Introduction using pairwise-comparison data
-  <notebooks/intro-pairwise.ipynb>`_
+  <https://github.com/lucasmaystre/choix/blob/master/notebooks/intro-pairwise.ipynb>`_
 - `Case study: analyzing the GIFGIF dataset
-  <notebooks/gifgif-dataset.ipynb>`_
+  <https://github.com/lucasmaystre/choix/blob/master/notebooks/gifgif-dataset.ipynb>`_
 - `Using ChoiceRank to understand traffic on a network
-  <notebooks/choicerank-tutorial.ipynb>`_
+  <https://github.com/lucasmaystre/choix/blob/master/notebooks/choicerank-tutorial.ipynb>`_
 - `Approximate Bayesian inference using EP
-  <notebooks/ep-example.ipynb>`_
+  <https://github.com/lucasmaystre/choix/blob/master/notebooks/ep-example.ipynb>`_
 
 You can also find more information on the `official documentation
 <http://choix.lum.li/en/latest/>`_. In particular, the `API reference
