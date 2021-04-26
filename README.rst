@@ -98,10 +98,10 @@ References
 .. _Iterative Ranking from Pair-wise Comparison:
    https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf
 
-.. |build-status| image:: https://travis-ci.com/lucasmaystre/choix.svg?branch=master
+.. |build-status| image:: https://api.travis-ci.com/lucasmaystre/choix.svg?branch=master
    :alt: build status
    :scale: 100%
-   :target: https://travis-ci.com/lucasmaystre/choix
+   :target: https://app.travis-ci.com/github/lucasmaystre/choix
 
 .. |coverage| image:: https://codecov.io/gh/lucasmaystre/choix/branch/master/graph/badge.svg
    :alt: code coverage
