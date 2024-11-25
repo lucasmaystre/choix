@@ -6,9 +6,10 @@ from scipy.special import logsumexp
 
 from .utils import softmax
 
+MAXEXP = 500
 
 def _safe_exp(x):
-    x = min(x, 500)
+    x = max(min(x, MAXEXP), -MAXEXP)
     return math.exp(x)
 
 
