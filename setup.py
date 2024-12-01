@@ -12,7 +12,7 @@ def readme():
 
 setup(
     name='choix',
-    version='0.3.5',
+    version='0.3.6',
     author='Lucas Maystre',
     author_email='lucas@maystre.ch',
     description="Inference algorithms for models based on Luce's choice axiom.",
@@ -36,7 +36,7 @@ setup(
     setup_requires=['pytest-runner'],
     tests_require=[
         'pytest',
-        'networkx',
+        'networkx>=1,<3',
     ],
     include_package_data=True,
     zip_safe=False,
