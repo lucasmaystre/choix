@@ -100,15 +100,12 @@ References
 
 .. |build-status| image:: https://api.travis-ci.com/lucasmaystre/choix.svg?branch=master
    :alt: build status
-   :scale: 100%
    :target: https://app.travis-ci.com/github/lucasmaystre/choix
 
 .. |coverage| image:: https://codecov.io/gh/lucasmaystre/choix/branch/master/graph/badge.svg
    :alt: code coverage
-   :scale: 100%
    :target: https://codecov.io/gh/lucasmaystre/choix
 
 .. |docs| image:: https://readthedocs.org/projects/choix/badge/?version=latest
    :alt: documentation status
-   :scale: 100%
    :target: http://choix.lum.li/en/latest/?badge=latest
