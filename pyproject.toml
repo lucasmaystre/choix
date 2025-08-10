@@ -1,6 +1,6 @@
 [project]
 name = "choix"
-version = "0.4.0"
+version = "0.4.1"
 description = "Inference algorithms for models based on Luce's choice axiom."
 authors = [
   {name = "Lucas Maystre", email = "lucas@maystre.ch"},
