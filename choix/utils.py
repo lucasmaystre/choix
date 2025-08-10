@@ -1,49 +1,54 @@
 import math
-import numpy as np
 import random
-import scipy.linalg as spl
 import warnings
+from collections.abc import Sequence
+from typing import Any, cast
 
+import numpy as np
+import scipy.linalg as spl
+from numpy.typing import ArrayLike, NDArray
 from scipy.linalg import solve_triangular
 from scipy.special import logsumexp
-from scipy.stats import rankdata, kendalltau
+from scipy.stats import kendalltau, rankdata
 
+from .typing import PairwiseData, RankingData, Top1Data
 
 SQRT2 = math.sqrt(2.0)
 SQRT2PI = math.sqrt(2.0 * math.pi)
 
 
-def log_transform(weights):
+def log_transform(weights: ArrayLike) -> NDArray[np.float64]:
     """Transform weights into centered log-scale parameters."""
     params = np.log(weights)
     return params - params.mean()
 
 
-def exp_transform(params):
+def exp_transform(params: ArrayLike) -> NDArray[np.float64]:
     """Transform parameters into exp-scale weights."""
-    weights = np.exp(np.asarray(params) - np.mean(params))
+    params = np.asarray(params)
+    weights = np.exp(params - np.mean(params))
     return (len(weights) / weights.sum()) * weights
 
 
-def softmax(xs):
+def softmax(xs: NDArray[np.float64]) -> NDArray[np.float64]:
     """Stable implementation of the softmax function."""
     ys = xs - np.max(xs)
     exps = np.exp(ys)
     return exps / exps.sum(axis=0)
 
 
-def normal_cdf(x):
+def normal_cdf(x: float) -> float:
     """Normal cumulative density function."""
     # If X ~ N(0,1), returns P(X < x).
     return math.erfc(-x / SQRT2) / 2.0
 
 
-def normal_pdf(x):
+def normal_pdf(x: float) -> float:
     """Normal probability density function."""
-    return math.exp(-x*x / 2.0) / SQRT2PI
+    return math.exp(-x * x / 2.0) / SQRT2PI
 
 
-def inv_posdef(mat):
+def inv_posdef(mat: NDArray[np.float64]) -> NDArray[np.float64]:
     """Stable inverse of a positive definite matrix."""
     # See:
     # - http://www.seas.ucla.edu/~vandenbe/103/lectures/chol.pdf
@@ -54,7 +59,10 @@ def inv_posdef(mat):
     return np.transpose(res).dot(res)
 
 
-def footrule_dist(params1, params2=None):
+def footrule_dist(
+    params1: NDArray[np.float64],
+    params2: NDArray[np.float64] | None = None,
+) -> float:
     r"""Compute Spearman's footrule distance between two models.
 
     This function computes Spearman's footrule distance between the rankings
@@ -95,7 +103,10 @@ def footrule_dist(params1, params2=None):
     return np.sum(np.abs(ranks1 - ranks2))
 
 
-def kendalltau_dist(params1, params2=None):
+def kendalltau_dist(
+    params1: NDArray[np.float64],
+    params2: NDArray[np.float64] | None = None,
+) -> float:
     r"""Compute the Kendall tau distance between two models.
 
     This function computes the Kendall tau distance between the rankings
@@ -140,10 +151,10 @@ def kendalltau_dist(params1, params2=None):
     tau, _ = kendalltau(ranks1, ranks2)
     n_items = len(params1)
     n_pairs = n_items * (n_items - 1) / 2
-    return round((n_pairs - n_pairs * tau) / 2)
+    return round((n_pairs - n_pairs * cast(float, tau)) / 2)
 
 
-def rmse(params1, params2):
+def rmse(params1: NDArray[np.float64], params2: NDArray[np.float64]) -> float:
     r"""Compute the root-mean-squared error between two models.
 
     Parameters
@@ -162,10 +173,10 @@ def rmse(params1, params2):
     params1 = np.asarray(params1) - np.mean(params1)
     params2 = np.asarray(params2) - np.mean(params2)
     sqrt_n = math.sqrt(len(params1))
-    return np.linalg.norm(params1 - params2, ord=2) / sqrt_n
+    return float(np.linalg.norm(params1 - params2, ord=2) / sqrt_n)
 
 
-def log_likelihood_pairwise(data, params):
+def log_likelihood_pairwise(data: PairwiseData, params: NDArray[np.float64]) -> float:
     """Compute the log-likelihood of model parameters."""
     loglik = 0
     for winner, loser in data:
@@ -173,35 +184,40 @@ def log_likelihood_pairwise(data, params):
     return loglik
 
 
-def log_likelihood_rankings(data, params):
+def log_likelihood_rankings(data: RankingData, params: NDArray[np.float64]) -> float:
     """Compute the log-likelihood of model parameters."""
-    loglik = 0
+    loglik: float = 0.0
     params = np.asarray(params)
     for ranking in data:
         for i, winner in enumerate(ranking[:-1]):
-            loglik -= logsumexp(params.take(ranking[i:]) - params[winner])
+            loglik -= logsumexp(params.take(ranking[i:]) - params[winner])  # pyright: ignore[reportOperatorIssue]
     return loglik
 
 
-def log_likelihood_top1(data, params):
+def log_likelihood_top1(data: Top1Data, params: NDArray[np.float64]) -> float:
     """Compute the log-likelihood of model parameters."""
-    loglik = 0
+    loglik: float = 0.0
     params = np.asarray(params)
     for winner, losers in data:
         idx = np.append(winner, losers)
-        loglik -= logsumexp(params.take(idx) - params[winner])
+        loglik -= logsumexp(params.take(idx) - params[winner])  # pyright: ignore[reportOperatorIssue]
     return loglik
 
 
 def log_likelihood_network(
-        digraph, traffic_in, traffic_out, params, weight=None):
+    digraph: Any,
+    traffic_in: Sequence,
+    traffic_out: Sequence,
+    params: NDArray[np.float64],
+    weight: str | None = None,
+) -> float:
     """
     Compute the log-likelihood of model parameters.
 
     If ``weight`` is not ``None``, the log-likelihood is correct only up to a
     constant (independent of the parameters).
     """
-    loglik = 0
+    loglik: float = 0.0
     for i in range(len(traffic_in)):
         loglik += traffic_in[i] * params[i]
         if digraph.out_degree(i) > 0:
@@ -210,12 +226,11 @@ def log_likelihood_network(
                 loglik -= traffic_out[i] * logsumexp(params.take(neighbors))
             else:
                 weights = [digraph[i][j][weight] for j in neighbors]
-                loglik -= traffic_out[i] * logsumexp(
-                        params.take(neighbors), b=weights)
+                loglik -= traffic_out[i] * logsumexp(params.take(neighbors), b=weights)
     return loglik
 
 
-def statdist(generator):
+def statdist(generator: ArrayLike) -> NDArray[np.float64]:
     """Compute the stationary distribution of a Markov chain.
 
     Parameters
@@ -241,23 +256,26 @@ def statdist(generator):
         warnings.filterwarnings("ignore")
         lu, piv = spl.lu_factor(generator.T, check_finite=False)
     # The last row contains 0's only.
-    left = lu[:-1,:-1]
-    right = -lu[:-1,-1]
+    left = lu[:-1, :-1]
+    right = -lu[:-1, -1]
     # Solves system `left * x = right`. Assumes that `left` is
     # upper-triangular (ignores lower triangle).
     try:
         res = spl.solve_triangular(left, right, check_finite=False)
-    except:
+    except:  # noqa: E722
         # Ideally we would like to catch `spl.LinAlgError` only, but there seems
         # to be a bug in scipy, in the code that raises the LinAlgError (!!).
         raise ValueError(
-                "stationary distribution could not be computed. "
-                "Perhaps the Markov chain has more than one absorbing class?")
+            "stationary distribution could not be computed. "
+            "Perhaps the Markov chain has more than one absorbing class?"
+        )
     res = np.append(res, 1.0)
     return (n / res.sum()) * res
 
 
-def generate_params(n_items, interval=5.0, ordered=False):
+def generate_params(
+    n_items: int, interval: float = 5.0, ordered: bool = False
+) -> NDArray[np.float64]:
     r"""Generate random model parameters.
 
     This function samples a parameter independently and uniformly for each
@@ -280,10 +298,10 @@ def generate_params(n_items, interval=5.0, ordered=False):
     params = np.random.uniform(low=0, high=interval, size=n_items)
     if ordered:
         params.sort()
-    return params - params.mean() 
+    return params - params.mean()
 
 
-def generate_pairwise(params, n_comparisons=10):
+def generate_pairwise(params: ArrayLike, n_comparisons: int = 10) -> PairwiseData:
     """Generate pairwise comparisons from a Bradley--Terry model.
 
     This function samples comparisons pairs independently and uniformly at
@@ -303,9 +321,9 @@ def generate_pairwise(params, n_comparisons=10):
     data : list of (int, int)
        Pairwise-comparison samples (see :ref:`data-pairwise`).
     """
+    params = np.asarray(params)
     n = len(params)
     items = tuple(range(n))
-    params = np.asarray(params)
     data = list()
     for _ in range(n_comparisons):
         # Pick the pair uniformly at random.
@@ -317,7 +335,7 @@ def generate_pairwise(params, n_comparisons=10):
     return tuple(data)
 
 
-def generate_rankings(params, n_rankings, size=3):
+def generate_rankings(params: ArrayLike, n_rankings: int, size: int = 3) -> RankingData:
     """Generate rankings according to a Plackett--Luce model.
 
     This function samples subsets of items (of size ``size``) independently and
@@ -339,9 +357,9 @@ def generate_rankings(params, n_rankings, size=3):
         A list of (partial) rankings generated according to a Plackett--Luce
         model with the specified model parameters.
     """
+    params = np.asarray(params)
     n = len(params)
     items = tuple(range(n))
-    params = np.asarray(params)
     data = list()
     for _ in range(n_rankings):
         # Pick the alternatives uniformly at random.
@@ -351,7 +369,7 @@ def generate_rankings(params, n_rankings, size=3):
     return tuple(data)
 
 
-def compare(items, params, rank=False):
+def compare(items: Sequence[int], params: ArrayLike, rank: bool = False) -> int | NDArray[np.int64]:
     """Generate a comparison outcome that follows Luce's axiom.
 
     This function samples an outcome for the comparison of a subset of items,
@@ -379,7 +397,7 @@ def compare(items, params, rank=False):
         return np.random.choice(items, p=probs)
 
 
-def probabilities(items, params):
+def probabilities(items: Sequence[int], params: ArrayLike) -> NDArray[np.float64]:
     """Compute the comparison outcome probabilities given a subset of items.
 
     This function computes, for each item in ``items``, the probability that it

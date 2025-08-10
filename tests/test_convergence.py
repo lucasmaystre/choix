@@ -1,13 +1,13 @@
-import numpy as np
-import pytest
-
-from choix.convergence import *
 from unittest.mock import Mock
+
+import numpy as np
+
+from choix.convergence import NormOfDifferenceTest, ScalarFunctionTest
 
 
 def test_sf_works():
     """Basic test for ScalarFunctionTest."""
-    params = np.arange(5)
+    params = np.arange(5, dtype=float)
     seq = [2.0, 1.0, 2.0, 1.5, 1.3]
     fun = Mock()
     # With `tol=0.7`.
@@ -48,19 +48,19 @@ def test_nod_norm():
     """NODTest should respect the order of the norm."""
     # With L1 norm.
     test = NormOfDifferenceTest(tol=0.8, order=1)
-    assert not test([-0.5, +0.5])
-    assert not test([+0.5, -0.5])
+    assert not test(np.array([-0.5, +0.5]))
+    assert not test(np.array([+0.5, -0.5]))
     # With L2 norm.
     test = NormOfDifferenceTest(tol=0.8, order=2)
-    assert not test([-0.5, +0.5])
-    assert test([+0.5, -0.5])
+    assert not test(np.array([-0.5, +0.5]))
+    assert test(np.array([+0.5, -0.5]))
 
 
 def test_sf_no_update():
     """SFTest should not update its state when `update=False`."""
-    fun = Mock(side_effect=[2., 1.2, 0.9, 0.8])
+    fun = Mock(side_effect=[2.0, 1.2, 0.9, 0.8])
     test = ScalarFunctionTest(fun, tol=1.0)
-    dummy = np.arange(5)
+    dummy = np.arange(5, dtype=float)
     assert not test(dummy)
     # `2.0 - 1.2 < 1.0` -> True.
     assert test(dummy, update=False)
@@ -73,19 +73,19 @@ def test_sf_no_update():
 def test_nod_no_update():
     """NODTest should not update its state when `update=False`."""
     test = NormOfDifferenceTest(tol=0.6, order=1)
-    assert not test([-1.0, +1.0])
+    assert not test(np.array([-1.0, +1.0]))
     # Average norm of difference = 0.5.
-    assert test([-0.5, +0.5], update=False)
+    assert test(np.array([-0.5, +0.5]), update=False)
     # Average norm of difference = 0.8.
-    assert not test([-0.2, +0.2])
+    assert not test(np.array([-0.2, +0.2]))
     # Average norm of difference = 0.1.
-    assert test([-0.1, +0.1])
+    assert test(np.array([-0.1, +0.1]))
 
 
 def test_nod_normalization():
     """NODTest should normalize the criterion with the # of items."""
     for i in (1, 2, 5, 10):
         test = NormOfDifferenceTest(tol=0.5, order=1)
-        assert not test([-1.7, 1.7] * i)
-        assert not test([-1.0, 1.0] * i)
-        assert test([-0.8, 0.8] * i)
+        assert not test(np.array([-1.7, 1.7] * i))
+        assert not test(np.array([-1.0, 1.0] * i))
+        assert test(np.array([-0.8, 0.8] * i))

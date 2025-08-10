@@ -1,12 +1,30 @@
+from math import e, log
+
 import networkx as nx
 import numpy as np
 import pytest
 import scipy.stats as sps
-
-from choix.utils import *
-from math import log, e
 from scipy.linalg import inv
 
+from choix.utils import (
+    compare,
+    footrule_dist,
+    generate_pairwise,
+    generate_params,
+    generate_rankings,
+    inv_posdef,
+    kendalltau_dist,
+    log_likelihood_network,
+    log_likelihood_pairwise,
+    log_likelihood_rankings,
+    log_likelihood_top1,
+    normal_cdf,
+    normal_pdf,
+    probabilities,
+    rmse,
+    softmax,
+    statdist,
+)
 
 RND = np.random.RandomState(42)
 
@@ -29,11 +47,11 @@ def test_footrule_dist_simple_cases():
 
 
 def test_footrule_dist_default():
-    params1 = np.arange(0, 10)
+    params1 = np.arange(0, 10, dtype=float)
     assert footrule_dist(params1) == 0
-    params2 = np.arange(0, -10, -1)
+    params2 = np.arange(0, -10, -1, dtype=float)
     assert footrule_dist(params2) == 10**2 / 2
-    params3 = np.ones(10)
+    params3 = np.ones(10, dtype=float)
     assert footrule_dist(params3) == 25.0
 
 
@@ -57,12 +75,12 @@ def test_kendalltau_dist_simple_cases():
 
 
 def test_kendalltau_dist_default():
-    params1 = np.arange(0, 10)
+    params1 = np.arange(0, 10, dtype=float)
     assert kendalltau_dist(params1) == 0
-    params2 = np.arange(0, -10, -1)
+    params2 = np.arange(0, -10, -1, dtype=float)
     assert kendalltau_dist(params2) == (10 * 9) / 2
     # This is a deceptive case, the ties just happen to be resolved correctly.
-    params3 = np.ones(10)
+    params3 = np.ones(10, dtype=float)
     assert kendalltau_dist(params3) == 0
 
 
@@ -82,46 +100,35 @@ def test_rmse_simple_cases():
 
 
 def test_log_likelihood_pairwise():
-    data1 = ((0,1),)
-    data2 = ((0,1), (1,0))
-    data3 = ((0,1), (1,2), (2,0))
-    params1 = np.zeros(3)
-    params2 = np.arange(5)
+    data1 = ((0, 1),)
+    data2 = ((0, 1), (1, 0))
+    data3 = ((0, 1), (1, 2), (2, 0))
+    params1 = np.zeros(3, dtype=float)
+    params2 = np.arange(5, dtype=float)
+    assert np.allclose(log_likelihood_pairwise(data1, params1), -log(2))
+    assert np.allclose(log_likelihood_pairwise(data2, params1), -2 * log(2))
+    assert np.allclose(log_likelihood_pairwise(data3, params1), -3 * log(2))
+    assert np.allclose(log_likelihood_pairwise(data1, params2), -log(1 + e))
+    assert np.allclose(log_likelihood_pairwise(data2, params2), 1 - 2 * log(1 + e))
     assert np.allclose(
-            log_likelihood_pairwise(data1, params1), -log(2))
-    assert np.allclose(
-            log_likelihood_pairwise(data2, params1), -2 * log(2))
-    assert np.allclose(
-            log_likelihood_pairwise(data3, params1), -3 * log(2))
-    assert np.allclose(
-            log_likelihood_pairwise(data1, params2), -log(1 + e))
-    assert np.allclose(
-            log_likelihood_pairwise(data2, params2), 1 - 2 * log(1 + e))
-    assert np.allclose(
-            log_likelihood_pairwise(data3, params2),
-            3 - log(1 + e) - log(e + e*e) - log(e*e + 1))
+        log_likelihood_pairwise(data3, params2), 3 - log(1 + e) - log(e + e * e) - log(e * e + 1)
+    )
 
 
 def test_log_likelihood_rankings():
-    data = ((0,1,2,3),(1,3,0))
+    data = ((0, 1, 2, 3), (1, 3, 0))
     params1 = np.zeros(10)
-    params2 = np.log(np.linspace(1,2, num=4))
-    assert np.allclose(
-            log_likelihood_rankings(data, params1),
-            -log(4) - 2 * (log(3) + log(2)))
-    assert np.allclose(
-            log_likelihood_rankings(data, params2),
-            -5.486092774024455)
+    params2 = np.log(np.linspace(1, 2, num=4))
+    assert np.allclose(log_likelihood_rankings(data, params1), -log(4) - 2 * (log(3) + log(2)))
+    assert np.allclose(log_likelihood_rankings(data, params2), -5.486092774024455)
 
 
 def test_log_likelihood_top1():
-    data = ((1, (0,2,3)), (3, (1,2)))
+    data = ((1, (0, 2, 3)), (3, (1, 2)))
     params1 = np.zeros(10)
-    params2 = np.log(np.linspace(1,2, num=4))
-    assert np.allclose(
-            log_likelihood_top1(data, params1), -(log(4) + log(3)))
-    assert np.allclose(
-            log_likelihood_top1(data, params2), -2.420368128650429)
+    params2 = np.log(np.linspace(1, 2, num=4))
+    assert np.allclose(log_likelihood_top1(data, params1), -(log(4) + log(3)))
+    assert np.allclose(log_likelihood_top1(data, params2), -2.420368128650429)
 
 
 def test_log_likelihood_network():
@@ -131,22 +138,22 @@ def test_log_likelihood_network():
     traffic_out = [6, 0, 0]
     params = np.log([1.0, 2.0, 3.0])
     assert np.allclose(
-            log_likelihood_network(
-                    digraph, traffic_in, traffic_out, params, weight=None),
-            2 * log(2 / 5) + 4 * log(3 / 5))
+        log_likelihood_network(digraph, traffic_in, traffic_out, params, weight=None),
+        2 * log(2 / 5) + 4 * log(3 / 5),
+    )
     assert np.allclose(
-            log_likelihood_network(
-                    digraph, traffic_in, traffic_out, params, weight="weight"),
-            2 * log(2 / 8) + 4 * log(3 / 8))
+        log_likelihood_network(digraph, traffic_in, traffic_out, params, weight="weight"),
+        2 * log(2 / 8) + 4 * log(3 / 8),
+    )
 
 
 def test_statdist():
     """``statdist`` should return the stationary distribution."""
-    gen1 = np.array([[-1, 2/3, 1/3], [1/3, -1, 2/3], [2/3, 1/3, -1]])
-    dist1 = np.array([1., 1., 1.])
+    gen1 = np.array([[-1, 2 / 3, 1 / 3], [1 / 3, -1, 2 / 3], [2 / 3, 1 / 3, -1]])
+    dist1 = np.array([1.0, 1.0, 1.0])
     assert np.allclose(statdist(gen1), dist1)
-    gen2 = np.array([[-2/3, 2/3, 0], [1/3, -1, 2/3], [0, 1/3, -1/3]])
-    dist2 = np.array([3/7, 6/7, 12/7])
+    gen2 = np.array([[-2 / 3, 2 / 3, 0], [1 / 3, -1, 2 / 3], [0, 1 / 3, -1 / 3]])
+    dist2 = np.array([3 / 7, 6 / 7, 12 / 7])
     assert np.allclose(statdist(gen2), dist2)
 
 
@@ -158,10 +165,8 @@ def test_statdist_single_absorbing_class():
     # Markov chain where states 0 and 1 are transient, and 2 and 3 are
     # absorbing. It is weakly but not strongly connected, and has a single
     # absorbing class.
-    gen = np.array(
-            [[-1, 1, 0, 0], [1, -2, 1, 0], [0, 0, -1, 1], [0, 0, 1, -1]],
-            dtype=float)
-    dist = np.array([0., 0., 2., 2.])
+    gen = np.array([[-1, 1, 0, 0], [1, -2, 1, 0], [0, 0, -1, 1], [0, 0, 1, -1]], dtype=float)
+    dist = np.array([0.0, 0.0, 2.0, 2.0])
     assert np.allclose(statdist(gen), dist)
 
 
@@ -172,23 +177,22 @@ def test_statdist_two_absorbing_classes():
     """
     # Markov chain with two absorbing classes, (0, 1) and (3, 4).
     gen1 = np.array(
-            [[-1, 1, 0, 0, 0], [1, -1, 0, 0, 0], [0, 1, -2, 1, 0],
-            [0, 0, 0, -1, 1], [0, 0, 0, 1, -1]], dtype=float)
+        [[-1, 1, 0, 0, 0], [1, -1, 0, 0, 0], [0, 1, -2, 1, 0], [0, 0, 0, -1, 1], [0, 0, 0, 1, -1]],
+        dtype=float,
+    )
     with pytest.raises(ValueError):
-        x = statdist(gen1)
+        statdist(gen1)
     # Markov with two disconnected components, (0, 1) and (2, 3).
-    gen2 = np.array(
-            [[-1, 1, 0, 0], [1, -1, 0, 0], [0, 0, -1, 1], [0, 0, 1, -1]],
-            dtype=float)
+    gen2 = np.array([[-1, 1, 0, 0], [1, -1, 0, 0], [0, 0, -1, 1], [0, 0, 1, -1]], dtype=float)
     with pytest.raises(ValueError):
-        x = statdist(gen2)
+        statdist(gen2)
 
 
 def test_softmax():
     """``softmax`` should work as expected."""
     params1 = np.array([0, 0, 0])
     params2 = np.array([1000, 1000, 2000])
-    assert np.allclose(softmax(params1), [1/3, 1/3, 1/3])
+    assert np.allclose(softmax(params1), [1 / 3, 1 / 3, 1 / 3])
     assert np.allclose(softmax(params2), [0, 0, 1])
 
 
@@ -248,7 +252,7 @@ def test_compare_choice():
     params2 = np.zeros(10)
     for _ in range(10):
         items = RND.choice(10, size=3, replace=False)
-        assert compare(items, params2) in items
+        assert compare(items, params2) in items  # pyright: ignore[reportArgumentType]
 
 
 def test_compare_rankings():
@@ -263,5 +267,5 @@ def test_compare_rankings():
 def test_probabilities():
     """``probabilities`` should work as expected."""
     params = np.log([1, 2, 3, 4])
-    assert np.allclose(probabilities([0, 2, 3], params), [1/8, 3/8, 4/8])
-    assert np.allclose(probabilities([1, 0], params), [2/3, 1/3])
+    assert np.allclose(probabilities([0, 2, 3], params), [1 / 8, 3 / 8, 4 / 8])
+    assert np.allclose(probabilities([1, 0], params), [2 / 3, 1 / 3])

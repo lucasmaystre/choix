@@ -1,9 +1,11 @@
 import abc
+from collections.abc import Callable
+
 import numpy as np
+from numpy.typing import NDArray
 
 
 class ConvergenceTest(metaclass=abc.ABCMeta):
-
     """Abstract base class for convergence tests.
 
     Convergence tests should implement a single function, `__call__`, which
@@ -12,7 +14,7 @@ class ConvergenceTest(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def __call__(self, params, update=True):
+    def __call__(self, params: NDArray[np.float64], update: bool = True) -> bool:
         """Test whether convergence criterion is met.
 
         The parameter `update` controls whether `params` should replace the
@@ -21,7 +23,6 @@ class ConvergenceTest(metaclass=abc.ABCMeta):
 
 
 class NormOfDifferenceTest(ConvergenceTest):
-
     """Convergence test based on the norm of the difference vector.
 
     This convergence test computes the difference between two successive
@@ -29,12 +30,12 @@ class NormOfDifferenceTest(ConvergenceTest):
     difference vector (normalized by the number of items) is below `tol`.
     """
 
-    def __init__(self, tol=1e-8, order=1):
+    def __init__(self, tol: float = 1e-8, order: int = 1):
         self._tol = tol
         self._ord = order
         self._prev_params = None
 
-    def __call__(self, params, update=True):
+    def __call__(self, params: NDArray[np.float64], update: bool = True) -> bool:
         params = np.asarray(params) - np.mean(params)
         if self._prev_params is None:
             if update:
@@ -43,11 +44,10 @@ class NormOfDifferenceTest(ConvergenceTest):
         dist = np.linalg.norm(self._prev_params - params, ord=self._ord)
         if update:
             self._prev_params = params
-        return dist <= self._tol * len(params)
+        return bool(dist <= self._tol * len(params))
 
 
 class ScalarFunctionTest(ConvergenceTest):
-
     """Convergence test based on a scalar function of the parameters.
 
     This convergence test computes the values of a scalar function of the
@@ -58,12 +58,12 @@ class ScalarFunctionTest(ConvergenceTest):
     function.
     """
 
-    def __init__(self, fun, tol=1e-8):
+    def __init__(self, fun: Callable[[NDArray[np.float64]], float], tol: float = 1e-8):
         self._fun = fun
         self._tol = tol
         self._prev_val = None
 
-    def __call__(self, params, update=True):
+    def __call__(self, params: NDArray[np.float64], update: bool = True) -> bool:
         val = self._fun(params)
         if self._prev_val is None:
             if update:

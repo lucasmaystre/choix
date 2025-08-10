@@ -1,13 +1,30 @@
 """Minorization-maximization inference algorithms."""
 
 import itertools
+from collections.abc import Callable
+from typing import Any, TypeVar
+
 import numpy as np
+from numpy.typing import NDArray
 
 from .convergence import NormOfDifferenceTest
-from .utils import log_transform, exp_transform
+from .typing import PairwiseData, RankingData, Top1Data
+from .utils import exp_transform, log_transform
+
+T = TypeVar("T")
 
 
-def _mm(n_items, data, initial_params, alpha, max_iter, tol, mm_fun):
+def _mm(
+    n_items: int,
+    data: T,
+    initial_params: NDArray[np.float64] | None,
+    alpha: float,
+    max_iter: int,
+    tol: float,
+    mm_fun: Callable[
+        [int, T, NDArray[np.float64]], tuple[NDArray[np.float64], NDArray[np.float64]]
+    ],
+) -> NDArray[np.float64]:
     """
     Iteratively refine MM estimates until convergence.
 
@@ -29,7 +46,11 @@ def _mm(n_items, data, initial_params, alpha, max_iter, tol, mm_fun):
     raise RuntimeError("Did not converge after {} iterations".format(max_iter))
 
 
-def _mm_pairwise(n_items, data, params):
+def _mm_pairwise(
+    n_items: int,
+    data: PairwiseData,
+    params: NDArray[np.float64],
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Inner loop of MM algorithm for pairwise data."""
     weights = exp_transform(params)
     wins = np.zeros(n_items, dtype=float)
@@ -43,8 +64,13 @@ def _mm_pairwise(n_items, data, params):
 
 
 def mm_pairwise(
-        n_items, data, initial_params=None, alpha=0.0,
-        max_iter=10000, tol=1e-8):
+    n_items: int,
+    data: PairwiseData,
+    initial_params: NDArray[np.float64] | None = None,
+    alpha: float = 0.0,
+    max_iter: int = 10000,
+    tol: float = 1e-8,
+) -> NDArray[np.float64]:
     """Compute the ML estimate of model parameters using the MM algorithm.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -76,11 +102,14 @@ def mm_pairwise(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    return _mm(
-            n_items, data, initial_params, alpha, max_iter, tol, _mm_pairwise)
+    return _mm(n_items, data, initial_params, alpha, max_iter, tol, _mm_pairwise)
 
 
-def _mm_rankings(n_items, data, params):
+def _mm_rankings(
+    n_items: int,
+    data: RankingData,
+    params: NDArray[np.float64],
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Inner loop of MM algorithm for ranking data."""
     weights = exp_transform(params)
     wins = np.zeros(n_items, dtype=float)
@@ -96,8 +125,14 @@ def _mm_rankings(n_items, data, params):
     return wins, denoms
 
 
-def mm_rankings(n_items, data, initial_params=None, alpha=0.0,
-        max_iter=10000, tol=1e-8):
+def mm_rankings(
+    n_items: int,
+    data: RankingData,
+    initial_params: NDArray[np.float64] | None = None,
+    alpha: float = 0.0,
+    max_iter: int = 10000,
+    tol: float = 1e-8,
+) -> NDArray[np.float64]:
     """Compute the ML estimate of model parameters using the MM algorithm.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -129,11 +164,14 @@ def mm_rankings(n_items, data, initial_params=None, alpha=0.0,
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    return _mm(n_items, data, initial_params, alpha, max_iter, tol,
-            _mm_rankings)
+    return _mm(n_items, data, initial_params, alpha, max_iter, tol, _mm_rankings)
 
 
-def _mm_top1(n_items, data, params):
+def _mm_top1(
+    n_items: int,
+    data: Top1Data,
+    params: NDArray[np.float64],
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Inner loop of MM algorithm for top1 data."""
     weights = exp_transform(params)
     wins = np.zeros(n_items, dtype=float)
@@ -147,8 +185,13 @@ def _mm_top1(n_items, data, params):
 
 
 def mm_top1(
-        n_items, data, initial_params=None, alpha=0.0,
-        max_iter=10000, tol=1e-8):
+    n_items: int,
+    data: Top1Data,
+    initial_params: NDArray[np.float64] | None = None,
+    alpha: float = 0.0,
+    max_iter: int = 10000,
+    tol: float = 1e-8,
+) -> NDArray[np.float64]:
     """Compute the ML estimate of model parameters using the MM algorithm.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -183,7 +226,11 @@ def mm_top1(
     return _mm(n_items, data, initial_params, alpha, max_iter, tol, _mm_top1)
 
 
-def _choicerank(n_items, data, params):
+def _choicerank(
+    n_items: int,
+    data: tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]],
+    params: NDArray[np.float64],
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Inner loop of ChoiceRank algorithm."""
     weights = exp_transform(params)
     adj, adj_t, traffic_in, traffic_out = data
@@ -196,8 +243,15 @@ def _choicerank(n_items, data, params):
 
 
 def choicerank(
-        digraph, traffic_in, traffic_out, weight=None,
-        initial_params=None, alpha=1.0, max_iter=10000, tol=1e-8):
+    digraph: Any,
+    traffic_in: NDArray[np.float64],
+    traffic_out: NDArray[np.float64],
+    weight: str | None = None,
+    initial_params: NDArray[np.float64] | None = None,
+    alpha: float = 1.0,
+    max_iter: int = 10000,
+    tol: float = 1e-8,
+) -> NDArray[np.float64]:
     """Compute the MAP estimate of a network choice model's parameters.
 
     This function computes the maximum-a-posteriori (MAP) estimate of model
@@ -239,14 +293,14 @@ def choicerank(
         If the NetworkX library cannot be imported.
     """
     import networkx as nx
+
     # Compute the (sparse) adjacency matrix.
     n_items = len(digraph)
     nodes = np.arange(n_items)
-    adj = nx.to_scipy_sparse_matrix(digraph, nodelist=nodes, weight=weight)
+    adj = nx.to_scipy_sparse_matrix(digraph, nodelist=nodes, weight=weight)  # pyright: ignore[reportArgumentType]
     adj_t = adj.T.tocsr()
     # Process the data into a standard form.
     traffic_in = np.asarray(traffic_in)
     traffic_out = np.asarray(traffic_out)
     data = (adj, adj_t, traffic_in, traffic_out)
-    return _mm(
-            n_items, data, initial_params, alpha, max_iter, tol, _choicerank)
+    return _mm(n_items, data, initial_params, alpha, max_iter, tol, _choicerank)

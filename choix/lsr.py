@@ -1,13 +1,20 @@
 """(Iterative) Luce Spectral Ranking and related inference algorithms."""
 
-import functools
+from collections.abc import Callable
+
 import numpy as np
+from numpy.typing import NDArray
 
 from .convergence import NormOfDifferenceTest
+from .typing import PairwiseData, RankingData, Top1Data
 from .utils import exp_transform, log_transform, statdist
 
 
-def _init_lsr(n_items, alpha, initial_params):
+def _init_lsr(
+    n_items: int,
+    alpha: float,
+    initial_params: NDArray[np.float64] | None,
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Initialize the LSR Markov chain and the weights."""
     if initial_params is None:
         weights = np.ones(n_items)
@@ -17,7 +24,12 @@ def _init_lsr(n_items, alpha, initial_params):
     return weights, chain
 
 
-def _ilsr(fun, params, max_iter, tol):
+def _ilsr(
+    fun: Callable[[NDArray[np.float64] | None], NDArray[np.float64]],
+    params: NDArray[np.float64] | None,
+    max_iter: int,
+    tol: float,
+) -> NDArray[np.float64]:
     """Iteratively refine LSR estimates until convergence.
 
     Raises
@@ -27,13 +39,18 @@ def _ilsr(fun, params, max_iter, tol):
     """
     converged = NormOfDifferenceTest(tol, order=1)
     for _ in range(max_iter):
-        params = fun(initial_params=params)
+        params = fun(params)
         if converged(params):
             return params
     raise RuntimeError("Did not converge after {} iterations".format(max_iter))
 
 
-def lsr_pairwise(n_items, data, alpha=0.0, initial_params=None):
+def lsr_pairwise(
+    n_items: int,
+    data: PairwiseData,
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+) -> NDArray[np.float64]:
     """Compute the LSR estimate of model parameters.
 
     This function implements the Luce Spectral Ranking inference algorithm
@@ -72,7 +89,13 @@ def lsr_pairwise(n_items, data, alpha=0.0, initial_params=None):
 
 
 def ilsr_pairwise(
-        n_items, data, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
+    n_items: int,
+    data: PairwiseData,
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+    max_iter: int = 100,
+    tol: float = 1e-8,
+) -> NDArray[np.float64]:
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -104,12 +127,18 @@ def ilsr_pairwise(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    fun = functools.partial(
-            lsr_pairwise, n_items=n_items, data=data, alpha=alpha)
+
+    def fun(params: NDArray[np.float64] | None) -> NDArray[np.float64]:
+        return lsr_pairwise(n_items=n_items, data=data, alpha=alpha, initial_params=params)
+
     return _ilsr(fun, initial_params, max_iter, tol)
 
 
-def lsr_pairwise_dense(comp_mat, alpha=0.0, initial_params=None):
+def lsr_pairwise_dense(
+    comp_mat: NDArray[np.float64],
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+) -> NDArray[np.float64]:
     """Compute the LSR estimate of model parameters given dense data.
 
     This function implements the Luce Spectral Ranking inference algorithm
@@ -155,7 +184,12 @@ def lsr_pairwise_dense(comp_mat, alpha=0.0, initial_params=None):
 
 
 def ilsr_pairwise_dense(
-        comp_mat, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
+    comp_mat: NDArray[np.float64],
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+    max_iter: int = 100,
+    tol: float = 1e-8,
+) -> NDArray[np.float64]:
     """Compute the ML estimate of model parameters given dense data.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -192,12 +226,14 @@ def ilsr_pairwise_dense(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    fun = functools.partial(
-            lsr_pairwise_dense, comp_mat=comp_mat, alpha=alpha)
+
+    def fun(params: NDArray[np.float64] | None) -> NDArray[np.float64]:
+        return lsr_pairwise_dense(comp_mat=comp_mat, alpha=alpha, initial_params=params)
+
     return _ilsr(fun, initial_params, max_iter, tol)
 
 
-def rank_centrality(n_items, data, alpha=0.0):
+def rank_centrality(n_items: int, data: PairwiseData, alpha: float = 0.0) -> NDArray[np.float64]:
     """Compute the Rank Centrality estimate of model parameters.
 
     This function implements Negahban et al.'s Rank Centrality algorithm
@@ -233,7 +269,12 @@ def rank_centrality(n_items, data, alpha=0.0):
     return log_transform(statdist(chain))
 
 
-def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
+def lsr_rankings(
+    n_items: int,
+    data: RankingData,
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+) -> NDArray[np.float64]:
     """Compute the LSR estimate of model parameters.
 
     This function implements the Luce Spectral Ranking inference algorithm
@@ -269,7 +310,7 @@ def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
         sum_ = weights.take(ranking).sum()
         for i, winner in enumerate(ranking[:-1]):
             val = 1.0 / sum_
-            for loser in ranking[i+1:]:
+            for loser in ranking[i + 1 :]:
                 chain[loser, winner] += val
             sum_ -= weights[winner]
     chain -= np.diag(chain.sum(axis=1))
@@ -277,7 +318,13 @@ def lsr_rankings(n_items, data, alpha=0.0, initial_params=None):
 
 
 def ilsr_rankings(
-        n_items, data, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
+    n_items: int,
+    data: RankingData,
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+    max_iter: int = 100,
+    tol: float = 1e-8,
+) -> NDArray[np.float64]:
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -309,12 +356,19 @@ def ilsr_rankings(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    fun = functools.partial(
-            lsr_rankings, n_items=n_items, data=data, alpha=alpha)
+
+    def fun(params: NDArray[np.float64] | None) -> NDArray[np.float64]:
+        return lsr_rankings(n_items=n_items, data=data, alpha=alpha, initial_params=params)
+
     return _ilsr(fun, initial_params, max_iter, tol)
 
 
-def lsr_top1(n_items, data, alpha=0.0, initial_params=None):
+def lsr_top1(
+    n_items: int,
+    data: Top1Data,
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+) -> NDArray[np.float64]:
     """Compute the LSR estimate of model parameters.
 
     This function implements the Luce Spectral Ranking inference algorithm
@@ -355,7 +409,13 @@ def lsr_top1(n_items, data, alpha=0.0, initial_params=None):
 
 
 def ilsr_top1(
-        n_items, data, alpha=0.0, initial_params=None, max_iter=100, tol=1e-8):
+    n_items: int,
+    data: Top1Data,
+    alpha: float = 0.0,
+    initial_params: NDArray[np.float64] | None = None,
+    max_iter: int = 100,
+    tol: float = 1e-8,
+):
     """Compute the ML estimate of model parameters using I-LSR.
 
     This function computes the maximum-likelihood (ML) estimate of model
@@ -387,5 +447,8 @@ def ilsr_top1(
     params : numpy.ndarray
         The ML estimate of model parameters.
     """
-    fun = functools.partial(lsr_top1, n_items=n_items, data=data, alpha=alpha)
+
+    def fun(params: NDArray[np.float64] | None) -> NDArray[np.float64]:
+        return lsr_top1(n_items=n_items, data=data, alpha=alpha, initial_params=params)
+
     return _ilsr(fun, initial_params, max_iter, tol)
