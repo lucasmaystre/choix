@@ -1,4 +1,0 @@
-include README.rst
-include LICENSE
-graft notebooks
-prune notebooks/.ipynb_checkpoints

@@ -1,0 +1,90 @@
+[project]
+name = "choix"
+version = "0.3.6"
+description = "Inference algorithms for models based on Luce's choice axiom."
+authors = [
+  {name = "Lucas Maystre", email = "lucas@maystre.ch"},
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = [
+    "statistics",
+    "ml",
+    "bradley-terry",
+    "plackett-luce",
+    "choice",
+    "comparison",
+    "ranking",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "numpy",
+    "scipy",
+]
+
+[project.optional-dependencies]
+all = ["networkx>=1,<3"]
+
+[project.urls]
+Homepage = "https://github.com/lucasmaystre/choix"
+Documentation = "https://choix.lum.li/en/latest/"
+Repository = "https://github.com/lucasmaystre/choix.git"
+Issues = "https://github.com/lucasmaystre/choix/issues"
+
+[build-system]
+requires = ["uv_build>=0.7.19,<0.8.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.403",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.12.8",
+    "sphinx>=8.1.3",
+    "sphinx-rtd-theme>=3.0.2",
+]
+
+[tool.uv.build-backend]
+module-name = "choix"
+module-root = ""
+source-include = [
+    "tests/**",
+    "notebooks/*.ipynb",
+]
+
+[tool.ruff]
+line-length = 100  # Default is 88.
+
+[tool.ruff.format]
+line-ending = "lf"  # Default is "auto".
+
+[tool.ruff.lint]
+extend-select = ["W", "I"]  # Adds warnings & imports.
+
+[tool.pyright]
+deprecateTypingAliases = true
+reportDuplicateImport = true
+reportFunctionMemberAccess = "error"
+reportImportCycles = "error"
+reportIncompatibleMethodOverride = "error"
+reportInvalidStringEscapeSequence = "error"
+reportMatchNotExhaustive = "error"
+reportMissingImports = "error"
+reportPropertyTypeMismatch = "error"
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUntypedBaseClass = "error"
+strictDictionaryInference = true
+strictListInference = true
+strictSetInference = true
+reportMissingParameterType = true

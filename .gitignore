@@ -1,23 +1,9 @@
-# Compiled python modules.
-*.pyc
-
-# Setuptoolsbuild & distribution folders.
-/build/
-/dist/
-
-# Python egg metadata, regenerated from source files by setuptools.
-/*.egg-info
-/*.egg
-
-# Other.
-/.eggs/
 /_meta/
-.ipynb_checkpoints/
-.cache/
+/.vscode/
 
 # Sphinx-generated doc.
-docs/_build
+/docs/_build
 
 # Coverage information.
-.coverage
+/.coverage
 /htmlcov
