@@ -1,6 +1,6 @@
 # choix
 
-[![build status](https://api.travis-ci.com/lucasmaystre/choix.svg?branch=master)](https://app.travis-ci.com/github/lucasmaystre/choix)
+[![Build package](https://github.com/lucasmaystre/choix/actions/workflows/build.yml/badge.svg)](https://github.com/lucasmaystre/choix/actions/workflows/build.yml)
 [![code coverage](https://codecov.io/gh/lucasmaystre/choix/branch/master/graph/badge.svg)](https://codecov.io/gh/lucasmaystre/choix)
 [![documentation status](https://readthedocs.org/projects/choix/badge/?version=latest)](http://choix.lum.li/en/latest/?badge=latest)
 
