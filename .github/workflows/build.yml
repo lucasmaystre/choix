@@ -26,10 +26,16 @@ jobs:
         run: uv run ruff format --check --diff
 
       - name: Run unit tests
-        run: uv run pytest --cov --cov-report=xml
+        run: uv run pytest --cov --cov-report=xml --junitxml=junit.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
           token: ${{ secrets.CODECOV_TOKEN }}
