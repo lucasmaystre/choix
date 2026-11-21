@@ -117,6 +117,39 @@ def test_pairwise_hessian():
     _test_hessian(8, fcts)
 
 
+def test_pairwise_hessp():
+    """Hessian-vector product should match the dense Hessian."""
+    fcts = PairwiseFcts(PAIRWISE_DATA, 0.2)
+    for sigma in np.linspace(1, 20, num=10):
+        xs = sigma * RND.randn(8)
+        vec = RND.randn(8)
+        assert np.allclose(fcts.hessp(xs, vec), fcts.hessian(xs) @ vec)
+
+
+def test_pairwise_repeated_comparisons():
+    """Aggregated duplicates should match the per-comparison definition."""
+    fcts = PairwiseFcts(PAIRWISE_DATA, 0.2)
+    xs = RND.randn(8)
+    obj = 0.2 * np.sum(xs**2)
+    grad = 0.4 * xs
+    for win, los in PAIRWISE_DATA:
+        obj += np.logaddexp(0, -(xs[win] - xs[los]))
+        z = 1 / (1 + np.exp(xs[win] - xs[los]))
+        grad[win] -= z
+        grad[los] += z
+    assert np.isclose(fcts.objective(xs), obj)
+    assert np.allclose(fcts.gradient(xs), grad)
+
+
+def test_pairwise_empty():
+    """Empty data should yield only the penalty term."""
+    fcts = PairwiseFcts([], 0.2)
+    xs = RND.randn(8)
+    assert np.isclose(fcts.objective(xs), 0.2 * np.sum(xs**2))
+    assert np.allclose(fcts.gradient(xs), 0.4 * xs)
+    assert np.allclose(fcts.hessian(xs), 0.4 * np.identity(8))
+
+
 def test_top1_gradient():
     """Gradient of top1-data objective should be correct."""
     fcts = Top1Fcts(TOP1_DATA, 0.2)
